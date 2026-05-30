@@ -1,0 +1,3709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Khidkie™ | Quotation Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&family=Raleway&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Shrikhand&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    
+    <style>
+        :root {
+    --primary: #c01918;        /* Red */
+    --secondary: #1d2762;      /* Dark Blue */
+    --light: #ffffff;          /* White */
+    --background: #ffffff;
+    --background-soft: #f8f9fa;
+    --text-dark: #1d2762;
+    --text-muted: #6c757d;
+    --border-color: #eeeeee;
+    }   
+    
+
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--background-soft);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            padding: 1rem;
+        }
+
+        h1, h2, h3, h4 { font-family: 'Raleway', sans-serif; color: var(--text-dark); }
+        h2 { font-size: 1.5rem; }
+        h3 { color: #c01918; font-size: 1.25rem; margin-bottom: 1rem; }
+
+        .brand-header {
+            display: flex; align-items: center; justify-content: center;
+            gap: 1rem; margin-bottom: 1.5rem; text-align: center;
+        }
+        .brand-name { font-family: 'Shrikhand', sans-serif; color: #c01918; font-size: 28px; }
+
+        .container {
+            max-width: 1400px; margin: 0 auto; background: var(--light);
+            border-radius: 8px; box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color); padding: 1rem;
+        }
+
+        /* --- TABS --- */
+        .mobile-tabs { display: flex; width: 100%; border-bottom: 2px solid var(--border-color); margin-bottom: 1.5rem; }
+        .tab-button {
+            flex: 1; padding: 1rem; font-size: 1rem; font-weight: 600; text-align: center;
+            background: none; border: none; cursor: pointer; color: var(--text-muted);
+            border-bottom: 3px solid transparent; transition: all 0.3s ease;
+        }
+        .tab-button.active { color: #c01918; border-bottom-color: #c01918; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        
+        .grid-layout { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+
+        @media (min-width: 1024px) {
+            body { padding: 2rem 5%; }
+            .container { padding: 2rem; }
+            .brand-name { font-size: 36px; }
+            .mobile-tabs { display: none; }
+            .grid-layout { grid-template-columns: 3fr 2fr; }
+            .tab-panel { display: block !important; }
+            .database-layout { display: grid; grid-template-columns: 1fr 2fr; }
+            .product-database { height: 600px; }
+        }
+
+        .database-layout { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+
+        /* --- FORMS & BUTTONS --- */
+        .form-group { margin-bottom: 1.25rem; position: relative; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+        .form-control {
+            width: 100%; padding: 0.85rem 1rem; background: var(--background);
+            border: 1px solid #ced4da; border-radius: 4px; color: var(--text-dark);
+            font-family: 'Montserrat', sans-serif; transition: all 0.3s ease; font-size: 1rem;
+        }
+        .form-control:focus { outline: none; border-color: #c01918; box-shadow: 0 0 0 3px rgba(192, 25, 24, 0.15); }
+        .form-control:disabled { background-color: var(--background-soft); cursor: not-allowed; opacity: 0.7; }
+
+        .btn {
+            display: inline-block; padding: 0.85rem 1.5rem; background: #c01918; color: white;
+            border: none; border-radius: 4px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1px; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(192, 25, 24, 0.3); }
+        .btn-secondary { background: var(--secondary); }
+        .btn-secondary:hover { box-shadow: 0 10px 20px rgba(29, 39, 98, 0.3); }
+        .btn-outline { background: transparent; border: 2px solid var(--secondary); color: var(--secondary); }
+        .btn-outline:hover { background: var(--secondary); color: white; box-shadow: none; }
+
+        /* --- VARIANT SELECTOR (NEW) --- */
+        .variant-box {
+            background: #fdfdfd; border: 1px dashed #c01918; padding: 1.25rem;
+            border-radius: 6px; margin-bottom: 1.25rem; animation: fadeIn 0.3s ease-in-out;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .variant-box .form-label { color: #c01918; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- SEARCH & DB --- */
+        .search-container { position: relative; }
+        .suggestions-dropdown {
+            position: absolute; top: 100%; left: 0; width: 100%; background: var(--light);
+            border: 1px solid var(--border-color); border-top: none; border-radius: 0 0 4px 4px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05); max-height: 250px; overflow-y: auto; z-index: 100; display: none;
+        }
+        .suggestion-item { padding: 0.75rem 1rem; cursor: pointer; border-bottom: 1px solid var(--border-color); }
+        .suggestion-item:hover { background-color: var(--background-soft); }
+        .suggestion-item strong { color: #c01918; font-weight: 600; }
+        .suggestion-item span { font-size: 0.85rem; color: var(--text-muted); display: block; }
+
+        .filter-container { background: var(--background-soft); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color); }
+        .product-database { height: auto; max-height: 80vh; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 4px; }
+        .product-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: 0.2s;
+        }
+        .product-item:hover { background-color: var(--background-soft); border-left: 4px solid #c01918; }
+        .product-item .name { font-weight: 600; color: var(--text-dark); font-size: 0.9rem; }
+        .product-item .details { font-size: 0.8rem; color: var(--text-muted); }
+        .database-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .note { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; }
+        .flex-group { display: flex; gap: 1rem; }
+        .flex-group > div { flex: 1; }
+        hr { border: none; border-top: 1px solid var(--border-color); margin: 1.5rem 0; }
+
+        /* --- CART & STICKY FOOTER (NEW) --- */
+        .cart-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .cart-table th, .cart-table td { padding: 0.6rem; border: 1px solid var(--border-color); text-align: left; font-size: 0.85rem; }
+        .cart-table th { background-color: var(--background-soft); font-weight: 600; }
+        .btn-remove { background: #c01918; color: white; border: none; border-radius: 4px; cursor: pointer; padding: 0.4rem 0.6rem; font-size: 0.8rem; }
+        .btn-edit { background: var(--secondary); color: white; border: none; border-radius: 4px; cursor: pointer; padding: 0.4rem 0.6rem; font-size: 0.8rem; margin-right: 0.3rem; }
+        .btn-edit:hover { background: #263380; }
+
+        .sticky-cart-footer {
+            position: sticky; bottom: 0; background: var(--light); z-index: 50;
+            padding: 1rem; margin: 1.5rem -1rem -1rem -1rem; border-top: 2px solid var(--border-color);
+            box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.05); border-radius: 0 0 8px 8px;
+        }
+        .totals-summary { background: var(--background-soft); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 1rem; }
+        .total-row { display: flex; justify-content: space-between; align-items: center; font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+        .total-row.grand-total { font-size: 1.25rem; color: #c01918; margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem; }
+        
+        .action-box { display: flex; gap: 1rem; margin-bottom: 0; }
+        .action-box .btn { flex: 1; text-align: center; }
+
+        /* --- SMART SEARCH & KEYBOARD NAV --- */
+        .suggestion-active {
+            background-color: var(--primary) !important;
+            border-left: 4px solid var(--secondary);
+        }
+        .suggestion-active strong { color: white !important; }
+        .suggestion-active span { color: #ffe6e6 !important; }
+        
+        /* Smooth scrolling for infinite lists */
+        .suggestions-dropdown {
+            max-height: 300px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        
+        .product-item:focus {
+            outline: none;
+            background-color: var(--background-soft);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .brand-header {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* center logo */
+    padding: 10px 0;
+}
+
+.brand-logo {
+    height: 180px;   /* adjust size */
+    width: auto;
+    object-fit: contain;
+}
+
+/* =========================
+   WELCOME INTRO OVERLAY
+========================= */
+
+#welcomeOverlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #1d2762, #0f172a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: welcomeFadeOut 1s ease forwards;
+    animation-delay: 2.5s;
+}
+
+.welcome-content {
+    text-align: center;
+    color: white;
+    animation: welcomeScale 1.5s ease;
+}
+
+.welcome-content h1 {
+    font-family: 'Raleway', sans-serif;
+    font-size: 2.6rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: #fbf9f9;
+}
+
+.welcome-content h1 span {
+    color: #c01918;
+}
+
+.welcome-content p {
+    font-size: 1rem;
+    letter-spacing: 2px;
+    opacity: 0.85;
+}
+
+.welcome-line {
+    width: 120px;
+    height: 3px;
+    background: #c01918;
+    margin: 25px auto;
+    border-radius: 2px;
+    animation: lineGrow 1.2s ease;
+}
+
+.welcome-loader {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.welcome-loader span {
+    width: 8px;
+    height: 8px;
+    background: #c01918;
+    border-radius: 50%;
+    animation: pulse 1.2s infinite ease-in-out;
+}
+
+.welcome-loader span:nth-child(2) { animation-delay: 0.2s; }
+.welcome-loader span:nth-child(3) { animation-delay: 0.4s; }
+
+/* ANIMATIONS */
+@keyframes welcomeScale {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes lineGrow {
+    from { width: 0; }
+    to   { width: 120px; }
+}
+
+@keyframes pulse {
+    0%, 80%, 100% { opacity: 0.3; }
+    40% { opacity: 1; }
+}
+
+@keyframes welcomeFadeOut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+/* =========================================
+   📱 MOBILE RESPONSIVENESS OVERRIDES
+========================================= */
+
+/* 1. Prevent giant logo & text on mobile screens */
+.brand-logo {
+    height: 70px !important;
+    transition: height 0.3s ease;
+}
+.welcome-content h1 { font-size: 1.8rem !important; }
+.welcome-content p { font-size: 0.9rem !important; }
+
+/* Desktop scaling for the logo and welcome screen */
+@media (min-width: 1024px) {
+    .brand-logo { height: 180px !important; }
+    .welcome-content h1 { font-size: 2.6rem !important; }
+}
+
+/* 2. Fix layout breaking on smaller screens */
+@media (max-width: 1023px) {
+    
+    /* Stack side-by-side inputs (Size, Weight, Qty) vertically */
+    .flex-group {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 1rem;
+    }
+    .flex-group > div {
+        flex: 1 1 100% !important; 
+    }
+
+    /* Keep Add to Cart & Clear buttons side-by-side but proportioned */
+    .action-box {
+        flex-direction: row; 
+        width: 100%;
+        gap: 0.5rem;
+    }
+    .action-box .btn {
+        padding: 0.8rem 0.5rem;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    /* Fix Table Crunching - forces horizontal scroll instead of squeezing text */
+    .cart-table th, .cart-table td {
+        white-space: nowrap; 
+        font-size: 0.8rem;
+        padding: 0.6rem;
+    }
+    
+    /* Enable smooth native scrolling for the table container on touch devices */
+    div[style*="overflow-x: auto"] {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Adjust Sticky Footer to take up less vertical screen space */
+    .sticky-cart-footer {
+        padding: 0.75rem;
+        margin: 1rem -1rem -1rem -1rem;
+    }
+    .totals-summary {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    .total-row { font-size: 0.9rem; }
+    .total-row.grand-total { 
+        font-size: 1.1rem; 
+        margin-top: 0.5rem; 
+        padding-top: 0.5rem; 
+    }
+
+    /* Fit bottom footer buttons neatly across the screen */
+    .sticky-cart-footer .action-box {
+        flex-wrap: wrap;
+    }
+    .sticky-cart-footer .action-box .btn {
+        flex: 1 1 30%; /* Fits 3 buttons nicely */
+        font-size: 0.75rem;
+        padding: 0.6rem;
+    }
+    
+    /* Adjust Product Database List for better readability */
+    .filter-container { padding: 0.75rem; }
+    .product-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    .product-item .details { 
+        line-height: 1.5; 
+    }
+}
+
+/* =========================================
+   🛒 CART TABLE OVERFLOW FIX
+========================================= */
+
+/* 1. Prevent the CSS Grid item from blowing out its container */
+.tab-panel {
+    min-width: 0; 
+    max-width: 100%;
+}
+
+/* 2. Force the scrollable div to respect parent boundaries */
+#tab-calculator > div[style*="overflow-x: auto"] {
+    max-width: 100%;
+    width: 100%;
+    /* Add a subtle inner shadow to indicate scrollability on mobile */
+    background:
+        linear-gradient(to right, white 30%, rgba(255,255,255,0)),
+        linear-gradient(to left, white 30%, rgba(255,255,255,0)) 100% 0,
+        radial-gradient(farthest-side at 0 50%, rgba(0,0,0,.1), rgba(0,0,0,0)),
+        radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,.1), rgba(0,0,0,0)) 100% 0;
+    background-repeat: no-repeat;
+    background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+    background-attachment: local, local, scroll, scroll;
+}
+
+/* 3. Allow ONLY the Product Name column to wrap text, keep the rest compact */
+.cart-table td:first-child {
+    white-space: normal !important; 
+    min-width: 150px; /* Ensures the name doesn't get squeezed too thin */
+}
+
+/* Keep the numerical columns strictly on one line */
+.cart-table td:not(:first-child), 
+.cart-table th {
+    white-space: nowrap !important;
+}
+
+/* =========================================
+   MODAL & OTHER CHARGES STYLES
+========================================= */
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7);
+    z-index: 10000; display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.3s ease;
+}
+.modal-overlay.show { display: flex; opacity: 1; }
+.modal-content {
+    background: var(--light); width: 95%; max-width: 450px;
+    border-radius: 12px; padding: 2rem; position: relative;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    transform: translateY(-20px); transition: transform 0.3s ease;
+}
+.modal-overlay.show .modal-content { transform: translateY(0); }
+.modal-close {
+    position: absolute; top: 15px; right: 20px; font-size: 1.5rem;
+    color: var(--text-muted); background: none; border: none; cursor: pointer;
+}
+.modal-close:hover { color: var(--primary); }
+.charge-summary-box {
+    background: #fdfdfd; border: 1px solid var(--border-color);
+    padding: 1rem; border-radius: 6px; margin-bottom: 1rem; display: none;
+}
+.charge-row-ui {
+    display: flex; justify-content: space-between; font-size: 0.9rem;
+    margin-bottom: 0.5rem; color: var(--text-dark);
+}
+.charge-row-ui strong { color: var(--secondary); }
+
+/* ---- User-side visual refresh ---- */
+
+.container {
+    border-radius: 18px;
+    border: 1px solid #e8ebf4;
+    box-shadow: 0 20px 60px rgba(29, 39, 98, 0.08);
+}
+
+.mobile-tabs {
+    background: linear-gradient(180deg, #ffffff, #f7f9ff);
+    border: 1px solid #e8ebf4;
+    border-radius: 12px;
+    padding: 4px;
+    gap: 4px;
+}
+
+.tab-button {
+    border-radius: 10px;
+}
+
+.tab-button.active {
+    background: linear-gradient(135deg, rgba(192, 25, 24, 0.12), rgba(192, 25, 24, 0.05));
+}
+
+#tab-calculator, #tab-database, #tab-myquotes {
+    background: #ffffff;
+    border: 1px solid #edf0f6;
+    border-radius: 14px;
+    padding: 1rem;
+}
+
+.form-control {
+    border-radius: 10px;
+    border-color: #d7ddea;
+    box-shadow: inset 0 1px 2px rgba(17, 24, 39, 0.03);
+}
+
+.form-control:focus {
+    border-color: #c01918;
+    box-shadow: 0 0 0 4px rgba(192, 25, 24, 0.12);
+}
+
+.btn {
+    border-radius: 10px;
+}
+
+.cart-table {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.cart-table th {
+    background: linear-gradient(180deg, #f7f9ff, #edf2ff);
+    color: #1d2762;
+}
+
+.cart-table tbody tr:nth-child(even) {
+    background: #fbfcff;
+}
+
+.sticky-cart-footer {
+    border-top: 1px solid #e3e8f2;
+    box-shadow: 0 -10px 22px rgba(29, 39, 98, 0.08);
+}
+
+.totals-summary {
+    border-radius: 10px;
+    border-color: #e2e7f2;
+    background: linear-gradient(180deg, #f9fbff, #f4f7ff);
+}
+
+
+@media (max-width: 768px) {
+    #tab-calculator, #tab-database, #tab-myquotes {
+        padding: 0.75rem;
+        border-radius: 12px;
+    }
+}
+
+
+    </style>
+</head>
+
+
+<!-- WELCOME INTRO OVERLAY -->
+<div id="welcomeOverlay">
+    <div class="welcome-content">
+        <h1><span>Get Instant Quotation in</span> <br> 2 Minutes </h1>
+        <p>by Khidkie™</p>
+
+        <div class="welcome-line"></div>
+
+        <div class="welcome-loader">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+</div>
+
+
+<body>
+
+
+    <div class="container">
+        <div class="mobile-tabs">
+            <button class="tab-button active" data-tab="calculator"><i class="fas fa-calculator"></i> Calculator</button>
+            <button class="tab-button" data-tab="database"><i class="fas fa-database"></i> Products</button>
+            <button class="tab-button" data-tab="myquotes"><i class="fas fa-history"></i> My Quotes</button>
+        </div>
+        <div class="brand-header">
+         <img src="assets/images/khidkie_logo_small.png" alt="Khidkie Logo" class="brand-logo" onerror="this.onerror=null;this.src='assets/images/khidkie%20main%20logo%20trans.png';">
+         </div>
+
+        
+
+        <div class="grid-layout">
+            <div id="tab-calculator" class="tab-panel active">
+                <div class="flex-group" style="margin-bottom: 1.25rem;">
+        <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="clientName">Enter Company or Client name</label>
+            <input class="form-control" id="clientName" type="text" placeholder="e.g. ABC Aluminium Pvt Ltd" autocomplete="off" required />
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="quotationName">Project / Quotation Name</label>
+            <input class="form-control" id="quotationName" type="text" placeholder="e.g. ABC Heights, 3Bhk Sliding Windows" autocomplete="off" required />
+        </div>
+    </div>
+                <div class="form-group">
+                    <label class="form-label" for="pricePerKg">Today's Aluminium Price (₹ / kg)</label>
+                    <input class="form-control" id="pricePerKg" type="number" placeholder="Enter price per kg" min="0.01" step="0.01" required />
+                    <div class="total-row" style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+                        <span>Price with 18% GST:</span>
+                        <span id="priceWithGST" style="color: var(--text-dark);">₹0.00</span>
+                    </div>
+                </div>
+
+                <hr>
+                <h3>Add Product to Cart</h3>
+                
+                <div class="form-group">
+                    <label class="form-label" for="productSearch">Search / Select Product</label>
+                    <div class="search-container">
+                        <input class="form-control" id="productSearch" placeholder="Type Die No. or Name..." autocomplete="off" />
+                        <div class="suggestions-dropdown" id="suggestions"></div>
+                    </div>
+                </div>
+
+                <div class="variant-box" id="variantBox" style="display: none;">
+                    <div class="flex-group">
+                        <div class="form-group">
+                            <label class="form-label" for="lengthSelect"><i class="fas fa-ruler-horizontal"></i> 1. Select Size</label>
+                            <select class="form-control" id="lengthSelect">
+                                <option value="">-- Choose Size --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="weightSelect"><i class="fas fa-weight-hanging"></i> 2. Select Weight</label>
+                            <select class="form-control" id="weightSelect" disabled>
+                                <option value="">-- Choose Weight --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-group" style="align-items: flex-end;">
+                    <div class="form-group" style="flex: 0.5;">
+                        <label class="form-label" for="quantity"> Quantity</label>
+                        <input class="form-control" id="quantity" type="number" min="1" value="1" />
+                    </div>
+                    <div class="form-group action-box" style="flex: 1.5;">
+                        <button id="addBtn" class="btn"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+                        <button id="clearSearch" class="btn btn-outline">Clear</button>
+                    </div>
+                </div>
+
+                <div class="variant-box" style="display: block; border-color: var(--secondary); background: #f9fbfd; margin-top: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h4 style="color: var(--secondary); font-size: 1.1rem; margin: 0;">Hardware & Accessories</h4>
+    </div>
+    <div class="flex-group" style="align-items: flex-end; gap: 0.75rem;">
+        <div class="form-group" style="flex: 2; margin-bottom: 0;">
+            <label class="form-label" style="color: var(--secondary); font-size: 0.8rem;">Item name / Description</label>
+            <input class="form-control" id="hwName" type="text" placeholder="e.g. Hinge, Handle, Roller..." autocomplete="off" list="hwList" />
+            <datalist id="hwList"></datalist>
+        </div>
+        <div class="form-group" style="flex: 0.8; margin-bottom: 0;">
+            <label class="form-label" style="color: var(--secondary); font-size: 0.8rem;">Qty</label>
+            <input class="form-control" id="hwQty" type="number" min="1" value="1" />
+        </div>
+        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+            <label class="form-label" style="color: var(--secondary); font-size: 0.8rem;">Rate/Pc (₹)</label>
+            <input class="form-control" id="hwPrice" type="number" min="0" placeholder="Ex. GST" />
+        </div>
+        <div class="form-group" style="flex: 1.5; margin-bottom: 0; display: flex; gap: 0.5rem;">
+            <button id="addHwBtn" class="btn btn-secondary" style="flex: 1; padding: 0.85rem;"><i class="fas fa-plus"></i> Add</button>
+             </div>
+    </div>
+</div>
+
+<button id="openChargesBtn" class="btn btn-outline" style="flex: 1; padding: 0.85rem; border-color: var(--primary); color: var(--primary);" title="Add Other Charges"></i>Add other Charges</button>
+
+
+                <hr>
+                <h3>Quotation Cart</h3>
+                <h3 style="margin-bottom: 0.5rem; color: var(--secondary); font-size: 1.1rem;">Series Products</h3>
+                <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
+                    <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Size</th>
+                                <th>Qty</th>
+                                <th>Wt/pc</th>
+                                <th>Total Wt.</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cartBody">
+                            </tbody>
+                    </table>
+                </div>
+                <br><br>
+
+                <!--HARDWARE CART-->
+                <div id="hwCartContainer" style="display: none;">
+                    <h3 style="margin-bottom: 0.5rem; color: var(--secondary); font-size: 1.1rem;">Hardware & Accessories</h3>
+                    <div style="overflow-x: auto; max-height: 250px; overflow-y: auto;">
+                        <table class="cart-table">
+                            <thead>
+                                <tr>
+                                    <th>Item Description</th>
+                                    <th>Qty</th>
+                                    <th>Rate (₹)</th>
+                                    <th>Rate (Incl. GST)</th>
+                                    <th>Total (₹)</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hwCartBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="sticky-cart-footer">
+                    <div class="charge-summary-box" id="extraChargesSummary">
+                    <h4 style="font-size: 1rem; color: var(--secondary); margin-bottom: 0.5rem;"><i class="fas fa-receipt"></i> Other Charges</h4>
+                    <div id="chargesListUI"></div>
+                    </div>
+                    <div class="totals-summary">
+                        <div class="total-row">
+                            <span>Total Weight:</span>
+                            <span id="totalWeight">0.000 kg</span>
+                        </div>
+                        <div class="total-row grand-total">
+                            <span>Grand Total (incl. GST):</span>
+                            <span id="totalCost">₹0.00</span>
+                        </div>
+                    </div>
+                    <div class="action-box" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+    <button id="printBtn" class="btn" style="flex: 1; min-width: 100px;" type="button"><i class="fas fa-print"></i> Print</button>
+    <button id="saveQuoteBtn" class="btn" style="flex: 1; min-width: 140px; background: #1d2762;" type="button"><i class="fas fa-cloud-upload-alt"></i> Save Quote</button>
+    <button id="whatsappBtn" class="btn" style="flex: 1; min-width: 100px; background: #25D366;" type="button"><i class="fab fa-whatsapp"></i> Share</button>
+    <button id="emailBtn" class="btn" style="flex: 1; min-width: 100px; background: #3498db;" type="button"><i class="fas fa-envelope"></i> Email</button>
+    <button id="calcBtn" class="btn btn-outline" style="flex: 1; min-width: 100px;" type="button"><i class="fas fa-trash-alt"></i> Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-database" class="tab-panel">
+                <h3>Product Database</h3>
+                <div class="database-layout">
+                    <div class="filter-container">
+                        <h4>Filters</h4>
+                        <div class="form-group">
+                            <label for="filterSeries" class="form-label">By Series</label>
+                            <select id="filterSeries" class="form-control">
+                                
+                                <option value="all">All Series</option>
+                        
+                        <optgroup label="Exclusive New Upcoming Series">
+                                <option value="slimX">SlimX 32 Series (Launching May '26)</option>
+                        </optgroup>
+
+
+
+                                <!-- PREMIUM SYSTEMS -->
+                        <optgroup label="Premium Architectural Systems">
+                                  <option value="gulf">Gulf Series</option>
+                                <option value="cardinal">Cardinal Series</option>
+                                <option value="ventana">Ventana Series</option>
+                                <option value="sliding_folding">Sliding Folding Series (50 MM)</option>
+                        </optgroup>
+                        
+                                <!-- STANDARD SYSTEMS -->
+                        <optgroup label="Standard Architectural Systems">
+                                <option value="domal">Domal Series</option>
+                                <option value="regular">Regular Series</option>
+                        </optgroup>
+
+                                <!-- CASEMENT SYSTEMS -->
+                        <optgroup label="Casement Systems">
+                                <option value="r40">R40 Z Openable</option>
+                                <option value="r50">R50 Z Openable</option>
+                        </optgroup>        
+                                
+                                <!-- BASIC / COMMODITY -->
+                        <optgroup label="Utility Sections">       
+                                <option value="mosquito">Mosquito Series ( Sliding + Roller ) </option>
+                                <option value="door">Door Section</option>
+                                <option value="partition">Partition Section</option>
+                        </optgroup>
+
+                                <!-- RAW MATERIAL / ACCESSORIES -->
+                        <optgroup label="Accessories & Raw Materials">
+                                <option value="auxiliary">Auxiliary Series</option>
+                                <option value="tube">Tubes Series</option>
+                                <option value="grill">Grill</option> 
+                                <option value="other">Other</option>
+                        </optgroup>
+
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filterApplication" class="form-label">By Application</label>
+                            <select id="filterApplication" class="form-control">
+                                <option value="all">All Applications</option>
+                                <option value="windows">Windows</option>
+                                <option value="doors">Doors</option>
+                                <option value="partition">Partition</option>
+                                <option value="industrial">Industrial & Structural</option>
+                                <option value="shutter">Shutters</option>
+                                <option value="hardware">Hardware</option>
+                            </select>
+                        </div>
+                        <hr>
+                        <h4>Sort By</h4>
+                        <div class="form-group">
+                            <select id="sortBy" class="form-control">
+                                <option value="default">Default Sequence (Series)</option>
+                                <option value="name_asc">Name (A-Z)</option>
+                                <option value="name_desc">Name (Z-A)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="database-header">
+                            <span id="productCount">Loading...</span>
+                            <p class="note">Click any product to add</p>
+                        </div>
+                        <div class="product-database" id="productList">
+                            </div>
+                    </div>
+                </div>
+            </div>
+            <div id="tab-myquotes" class="tab-panel" style="grid-column: 1 / -1; margin-top: 1rem;">
+                <h3><i class="fas fa-history"></i> My Saved Quotes</h3>
+                <div class="database-layout" style="display: block;">
+                    <div style="width: 100%; overflow-x: auto; background: var(--background-soft); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color);">
+                        <table class="cart-table" style="background: white;">
+                            <thead>
+                                <tr>
+                                    <th>Quote ID</th>
+                                    <th>Date</th>
+                                    <th>Client Name</th>
+                                    <th>Project / Quotation Name</th>
+                                    <th style="text-align: right;">Grand Total</th>
+                                    <th style="text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="myQuotesBody">
+                                <tr><td colspan="6" class="muted" style="padding: 1rem; text-align: center;">No saved quotes found on this device.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="chargesModal" class="modal-overlay">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeChargesModal()">&times;</button>
+        <h3 style="color: var(--secondary);"> Add Other Charges</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Enter amounts manually. These will be added directly to the grand total.</p>
+        
+        <div class="form-group">
+            <label class="form-label">1. Surface Finishing</label>
+            <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
+                <select id="surfaceType" class="form-control" style="flex: 1.5;">
+                    <option value="Powder Coating">Powder Coating</option>
+                    <option value="Anodize">Anodize</option>
+                    <option value="Metal Coating">Metal Coating</option>
+                    <option value="Other Finish">Other...</option>
+                </select>
+                <input id="surfaceAmount" class="form-control" type="number" placeholder="Total ₹" style="flex: 1;" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">2. Packaging Charges</label>
+            <input id="packagingAmount" class="form-control" type="number" placeholder="Total Amount (₹)" />
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">3. Transportation Charges</label>
+            <input id="transportAmount" class="form-control" type="number" placeholder="Total Amount (₹)" />
+        </div>
+
+        <button onclick="saveOtherCharges()" class="btn" style="width: 100%; margin-top: 1rem;"><i class="fas fa-save"></i> Save Charges</button>
+    </div>
+</div>
+
+<div id="editCartItemModal" class="modal-overlay">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeEditModal()">&times;</button>
+        <h3 style="color: var(--secondary);" id="editModalTitle"><i class="fas fa-edit"></i> Edit Cart Item</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;" id="editModalSubtitle">Modify the details of your selected item.</p>
+        
+        <!-- Section for Series Products -->
+        <div id="editSeriesFields" style="display: none;">
+            <div class="form-group">
+                <label class="form-label" style="color: var(--secondary); font-weight: 600;">Product Name</label>
+                <div id="editProductName" style="font-weight: bold; margin-bottom: 1rem; color: var(--text-dark); background: var(--background-soft); padding: 0.65rem; border-radius: 4px; border: 1px solid var(--border-color);"></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" style="color: var(--secondary); font-weight: 600;">Size</label>
+                <select id="editLengthSelect" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" style="color: var(--secondary); font-weight: 600;">Weight per Piece</label>
+                <select id="editWeightSelect" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" style="color: var(--secondary); font-weight: 600;">Quantity</label>
+                <input id="editQuantity" class="form-control" type="number" min="1" />
+            </div>
+        </div>
+
+        <!-- Section for Hardware Items -->
+        <div id="editHardwareFields" style="display: none;">
+            <div class="form-group">
+                <label class="form-label" style="color: var(--secondary); font-weight: 600;">Item Name</label>
+                <input id="editHwName" class="form-control" type="text" />
+            </div>
+            <div class="form-group">
+                <label class="form-label" style="color: var(--secondary); font-weight: 600;">Rate (₹)</label>
+                <input id="editHwPrice" class="form-control" type="number" step="0.01" />
+            </div>
+            <div class="form-group">
+                <label class="form-label" style="color: var(--secondary); font-weight: 600;">Quantity</label>
+                <input id="editHwQty" class="form-control" type="number" min="1" />
+            </div>
+        </div>
+
+        <button onclick="saveEditCartItem()" class="btn" style="width: 100%; margin-top: 1.5rem;"><i class="fas fa-save"></i> Save Changes</button>
+    </div>
+</div>
+
+
+    <script>
+    /**
+     * ERP-LEVEL DATABASE SCHEMA
+     * Format: id (unique string), dieNo, name, series, application, weights (Object of Arrays)
+     */
+    const AllProducts = [
+        // ==========================================
+        // REGULAR SERIES
+        // ==========================================
+        { 
+            id: "SRE_001", dieNo: "SRE 001", name: "3/4 Single Track Top", 
+            series: "regular", application: "windows", 
+            weights: { "15ft": [1.250] } 
+        },
+        { 
+            id: "SRE_002", dieNo: "SRE 002", name: "3/4 Single Track Bottom", 
+            series: "regular", application: "windows", 
+            weights: { "15ft": [1.300] } 
+        },
+        { 
+            id: "SRE_003", dieNo: "SRE 003", name: "3/4 2 Track Top", 
+            series: "regular", application: "windows", 
+            weights: { "12ft": [1.350, 1.650, 2.100, 2.400], "15ft": [1.750, 2.100, 2.500, 3.000] } 
+        },
+        { 
+            id: "SRE_004", dieNo: "SRE 004", name: "3/4 2 Track Bottom", 
+            series: "regular", application: "windows", 
+            weights: { "12ft": [1.650, 2.100, 2.500, 3.100], "15ft": [2.100, 2.500, 3.000, 3.750] } 
+        },
+        { 
+            id: "SRE_005", dieNo: "SRE 005", name: "3/4 3 Track Top", 
+            series: "regular", application: "windows", 
+            weights: { "12ft": [1.800, 2.250, 2.800, 3.300], "15ft": [2.300, 2.900, 3.500, 4.200] } 
+        },
+        { 
+            id: "SRE_006", dieNo: "SRE 006", name: "3/4 3 Track Bottom", 
+            series: "regular", application: "windows", 
+            weights: { "12ft": [2.400, 2.900, 3.400, 4.000], "15ft": [3.000, 3.500, 4.000, 5.200] } 
+        },
+        { 
+            id: "SRE_007", dieNo: "SRE 007", name: "3/4 4 Track Top", 
+            series: "regular", application: "windows", 
+            weights: { "15ft": [4.300] } 
+        },
+        { 
+            id: "SRE_008", dieNo: "SRE 008", name: "3/4 4 Track Bottom", 
+            series: "regular", application: "windows", 
+            weights: { "15ft": [5.500] } 
+        },
+        { 
+            id: "SRE_009", dieNo: "SRE 009", name: "1'' 2 Track Top", 
+            series: "regular", application: "windows", 
+            weights: { "15ft": [2.700] } 
+        },
+        { 
+            id: "SRE_010", dieNo: "SRE 010", name: "1'' 2 Track Bottom", 
+            series: "regular", application: "windows", 
+            weights: { "15ft": [2.900] } 
+        },
+        { 
+            id: "SRE_011", dieNo: "SRE 011", name: "1'' 3 Track Top", 
+            series: "regular", application: "windows", 
+            weights: { "15ft": [3.800] } 
+        },
+        { 
+            id: "SRE_012", dieNo: "SRE 012", name: "1'' 3 Track Bottom", 
+            series: "regular", application: "windows", 
+            weights: { "15ft": [4.600] } 
+        },
+        { 
+            id: "SRE_013", dieNo: "SRE 013", name: "1'' 4 Track Top", 
+            series: "regular", application: "windows", 
+            weights: { "15ft": [5.700] } 
+        },
+        { 
+            id: "SRE_014", dieNo: "SRE 014", name: "1'' 4 Track Bottom", 
+            series: "regular", application: "windows", 
+            weights: { "15ft": [6.200] } 
+        },
+        { 
+            id: "SRE_015", dieNo: "SRE 015", name: "3/4 Handle", 
+            series: "regular", application: "windows", 
+            weights: { "12ft": [0.900, 1.300, 1.500, 2.000], "15ft": [1.200, 1.600, 2.000, 2.400] } 
+        },
+        { 
+            id: "SRE_016", dieNo: "SRE 016", name: "3/4 Interlock", 
+            series: "regular", application: "windows", 
+            weights: { "12ft": [1.100, 1.350, 1.800, 2.250], "15ft": [1.450, 1.750, 2.200, 2.800] } 
+        },
+        { 
+            id: "SRE_017", dieNo: "SRE 017", name: "3/4 Top Bottom", 
+            series: "regular", application: "windows", 
+            weights: { "12ft": [0.900, 1.300, 1.500, 2.000], "15ft": [1.200, 1.600, 2.000, 2.400] } 
+        },
+        { 
+            id: "SRE_018", dieNo: "SRE 018", name: "Long Top Bottom", 
+            series: "regular", application: "windows", 
+            weights: { "15ft": [2.000] } 
+        },
+        { 
+            id: "SRE_019", dieNo: "SRE 019", name: "3/4 Middle", 
+            series: "regular", application: "windows", 
+            weights: { "15ft": [1.400, 1.800] } 
+        },
+        { 
+            id: "SRE_020", dieNo: "SRE 020", name: "60mm Handle", 
+            series: "regular", application: "windows", 
+            weights: { "12ft": [1.800], "15ft": [2.200] } 
+        },
+        { 
+            id: "SRE_021", dieNo: "SRE 021", name: "60mm Interlock", 
+            series: "regular", application: "windows", 
+            weights: { "12ft": [1.850], "15ft": [2.300] } 
+        },
+        { 
+            id: "SRE_022", dieNo: "SRE 022", name: "60mm Interlock (Mos.)", 
+            series: "regular", application: "windows", 
+            weights: { "12ft": [1.850], "15ft": [2.300] } 
+        },
+        { 
+            id: "SRE_023", dieNo: "SRE 023", name: "60mm Top Bottom", 
+            series: "regular", application: "windows", 
+            weights: { "12ft": [1.800], "15ft": [2.200] } 
+        },
+
+        // ==========================================
+        // DOOR SECTION
+        // ==========================================
+        { 
+            id: "SDO_001", dieNo: "SDO 001", name: "2x1 Handle", 
+            series: "door", application: "doors", 
+            weights: { 
+                "12ft": [1.800], 
+                "15ft": [1.550, 1.750, 1.950, 2.250, 2.550, 2.850, 3.150] 
+            } 
+        },
+        { 
+            id: "SDO_002", dieNo: "SDO 002", name: "2x1 Interlock", 
+            series: "door", application: "doors", 
+            weights: { 
+                "12ft": [2.050], 
+                "15ft": [2.500] 
+            } 
+        },
+        { 
+            id: "SDO_003", dieNo: "SDO 003", name: "2x1 Bearing Bottom", 
+            series: "door", application: "doors", 
+            weights: { 
+                "12ft": [2.100], 
+                "15ft": [2.600] 
+            } 
+        },
+        { 
+            id: "SDO_004", dieNo: "SDO 004", name: "2x1 Middle", 
+            series: "door", application: "doors", 
+            weights: { 
+                "12ft": [1.750], 
+                "13ft": [1.950], 
+                "15ft": [1.850, 2.250] 
+            } 
+        },
+        { 
+            id: "SDO_005", dieNo: "SDO 005", name: "3x1 Handle", 
+            series: "door", application: "doors", 
+            weights: { 
+                "15ft": [2.300, 2.800, 3.500] 
+            } 
+        },
+        { 
+            id: "SDO_006", dieNo: "SDO 006", name: "3x1 Middle", 
+            series: "door", application: "doors", 
+            weights: { 
+                "15ft": [2.800, 3.450] 
+            } 
+        },
+        { 
+            id: "SDO_007", dieNo: "SDO 007", name: "2.5x1 Molding Handle", 
+            series: "door", application: "doors", 
+            weights: { 
+                "15ft": [2.400, 2.800] 
+            } 
+        },
+        { 
+            id: "SDO_008", dieNo: "SDO 008", name: "2.5x1 Molding Middle", 
+            series: "door", application: "doors", 
+            weights: { 
+                "15ft": [2.800] 
+            } 
+        },
+        { 
+            id: "SDO_009", dieNo: "SDO 009", name: "3x1 Molding Handle", 
+            series: "door", application: "doors", 
+            weights: { 
+                "15ft": [3.250] 
+            } 
+        },
+        { 
+            id: "SDO_010", dieNo: "SDO 010", name: "3x1 Molding Middle", 
+            series: "door", application: "doors", 
+            weights: { 
+                "15ft": [3.200] 
+            } 
+        },
+        { 
+            id: "SDO_011", dieNo: "SDO 011", name: "3/4 P Pipe", 
+            series: "door", application: "doors", 
+            weights: { 
+                "12ft": [1.350], 
+                "15ft": [1.750] 
+            } 
+        },
+        { 
+            id: "SDO_012", dieNo: "SDO 012", name: "2x1 P Pipe", 
+            series: "door", application: "doors", 
+            weights: { 
+                "12ft": [1.350], 
+                "15ft": [1.800] 
+            } 
+        },
+        { 
+            id: "SDO_013", dieNo: "SDO 013", name: "2.5x1.5 Molding P Pipe", 
+            series: "door", application: "doors", 
+            weights: { 
+                "15ft": [2.850] 
+            } 
+        },
+
+        // ==========================================
+        // PARTITION SECTION
+        // ==========================================
+        { 
+            id: "SPA_001", dieNo: "SPA 001", name: "2.5x1.5 SP", 
+            series: "partition", application: "partition", 
+            weights: { 
+                "12ft": [1.800, 2.000, 2.350, 2.800, 3.500], 
+                "14ft": [3.100], 
+                "15ft": [2.250, 2.700, 3.000, 3.500, 4.500] 
+            } 
+        },
+        { 
+            id: "SPA_002", dieNo: "SPA 002", name: "2.5x1.5 DP", 
+            series: "partition", application: "partition", 
+            weights: { 
+                "12ft": [1.800, 2.000, 2.350, 2.800, 3.500], 
+                "15ft": [2.250, 2.750, 3.000, 3.500, 4.500] 
+            } 
+        },
+        { 
+            id: "SPA_003", dieNo: "SPA 003", name: "2x1 SP", 
+            series: "partition", application: "partition", 
+            weights: { "15ft": [2.000] } 
+        },
+        { 
+            id: "SPA_004", dieNo: "SPA 004", name: "2x1 DP", 
+            series: "partition", application: "partition", 
+            weights: { "15ft": [2.100] } 
+        },
+        { 
+            id: "SPA_005", dieNo: "SPA 005", name: "4x1.75 SP", 
+            series: "partition", application: "partition", 
+            weights: { "12ft": [3.500], "15ft": [4.400] } 
+        },
+        { 
+            id: "SPA_006", dieNo: "SPA 006", name: "4x1.75 DP", 
+            series: "partition", application: "partition", 
+            weights: { "12ft": [3.600], "15ft": [4.500] } 
+        },
+        { 
+            id: "SPA_007", dieNo: "SPA 007", name: "47x44 Door Vertical", 
+            series: "partition", application: "doors", 
+            weights: { "14ft": [2.800], "15ft": [2.950, 3.700], "16ft": [3.100] } 
+        },
+        { 
+            id: "SPA_008", dieNo: "SPA 008", name: "47x44 Tips Vertical", 
+            series: "partition", application: "partition", 
+            weights: { "15ft": [2.950], "16ft": [3.200] } 
+        },
+        { 
+            id: "SPA_009", dieNo: "SPA 009", name: "47x44 Door Top", 
+            series: "partition", application: "doors", 
+            weights: { "14ft": [2.800], "15ft": [2.950, 3.700], "16ft": [3.100] } 
+        },
+        { 
+            id: "SPA_010", dieNo: "SPA 010", name: "47x44 Door Middle", 
+            series: "partition", application: "doors", 
+            weights: { "15ft": [2.950, 3.200] } 
+        },
+        { 
+            id: "SPA_011", dieNo: "SPA 011", name: "47x44 DMS", 
+            series: "partition", application: "doors", 
+            weights: { "15ft": [3.200] } 
+        },
+        { 
+            id: "SPA_012", dieNo: "SPA 012", name: "85x44 Door Vertical", 
+            series: "partition", application: "doors", 
+            weights: { "15ft": [4.200, 5.200], "16ft": [4.500, 5.500] } 
+        },
+        { 
+            id: "SPA_013", dieNo: "SPA 013", name: "85x44 Door Top", 
+            series: "partition", application: "doors", 
+            weights: { "15ft": [4.200, 5.200], "16ft": [4.500, 5.500] } 
+        },
+        { 
+            id: "SPA_014", dieNo: "SPA 014", name: "85x44 Door Middle", 
+            series: "partition", application: "doors", 
+            weights: { "15ft": [4.200, 5.200] } 
+        },
+        { 
+            id: "SPA_015", dieNo: "SPA 015", name: "85x44 DMS", 
+            series: "partition", application: "doors", 
+            weights: { "15ft": [5.000], "16ft": [5.300] } 
+        },
+        { 
+            id: "SPA_016", dieNo: "SPA 016", name: "114mm Door Bottom", 
+            series: "partition", application: "doors", 
+            weights: { "15ft": [5.200] } 
+        },
+        { 
+            id: "SPA_017", dieNo: "SPA 017", name: "2.5x1.5 Leg SP", 
+            series: "partition", application: "partition", 
+            weights: { "15ft": [3.800], "16ft": [4.000] } 
+        },
+        { 
+            id: "SPA_018", dieNo: "SPA 018", name: "2.5x2.5 Corner Pipe", 
+            series: "partition", application: "partition", 
+            weights: { "12ft": [3.900], "15ft": [4.900] } 
+        },
+        { 
+            id: "SPA_019", dieNo: "SPA 019", name: "Glasing Clip", 
+            series: "partition", application: "hardware", 
+            weights: { "15ft": [0.400] } 
+        },
+        { 
+            id: "SPA_020", dieNo: "SPA 020", name: "Glasing Clip Square", 
+            series: "partition", application: "hardware", 
+            weights: { "15ft": [0.950] } 
+        },
+        { 
+            id: "SPA_021", dieNo: "SPA 021", name: "Glasing Patta", 
+            series: "partition", application: "hardware", 
+            weights: { "12ft": [0.550], "15ft": [0.700] } 
+        },
+        { 
+            id: "SPA_022", dieNo: "SPA 022", name: "Door Sliding C Channel", 
+            series: "partition", application: "hardware", 
+            weights: { "12ft": [1.650], "13ft": [1.790], "14ft": [1.920], "16ft": [2.200] } 
+        },
+
+        // ==========================================
+        // RECTANGLE TUBE + SQUARE TUBE SECTION
+        // ==========================================
+        { 
+            id: "SRT_001", dieNo: "SRT 001", name: "25x12 RT", 
+            series: "tube", application: "industrial", 
+            weights: { "12ft": [0.950], "15ft": [1.200] } 
+        },
+        { 
+            id: "SRT_002", dieNo: "SRT 002", name: "50x12 RT", 
+            series: "tube", application: "industrial", 
+            weights: { "12ft": [1.650], "15ft": [2.050] } 
+        },
+        { 
+            id: "SRT_003", dieNo: "SRT 003", name: "75x12 RT", 
+            series: "tube", application: "industrial", 
+            weights: { "12ft": [2.350], "15ft": [3.000] } 
+        },
+        { 
+            id: "SRT_004", dieNo: "SRT 004", name: "100x12 RT", 
+            series: "tube", application: "industrial", 
+            weights: { "12ft": [3.000], "15ft": [3.750] } 
+        },
+        { 
+            id: "SRT_005", dieNo: "SRT 005", name: "9x16 RT", 
+            series: "tube", application: "industrial", 
+            weights: { "15ft": [0.650] } 
+        },
+        { 
+            id: "SRT_006", dieNo: "SRT 006", name: "19x19 RT", 
+            series: "tube", application: "industrial", 
+            weights: { "12ft": [0.800], "15ft": [1.000] } 
+        },
+        { 
+            id: "SRT_007", dieNo: "SRT 007", name: "38x19 RT", 
+            series: "tube", application: "industrial", 
+            weights: { "12ft": [1.700], "15ft": [2.150] } 
+        },
+        { 
+            id: "SRT_008", dieNo: "SRT 008", name: "75x19 RT", 
+            series: "tube", application: "industrial", 
+            weights: { "12ft": [3.000], "15ft": [3.750] } 
+        },
+        { 
+            id: "SRT_009", dieNo: "SRT 009", name: "38x25 RT", 
+            series: "tube", application: "industrial", 
+            weights: { 
+                "12ft": [0.950, 1.350, 2.000], 
+                "15ft": [1.200, 1.800, 2.500] 
+            } 
+        },
+        { 
+            id: "SRT_010", dieNo: "SRT 010", name: "50x25 RT", 
+            series: "tube", application: "industrial", 
+            weights: { 
+                "12ft": [1.100, 1.500, 1.900, 2.750], 
+                "15ft": [1.450, 1.900, 2.400, 3.450] 
+            } 
+        },
+        { 
+            id: "SRT_011", dieNo: "SRT 011", name: "63x25 RT", 
+            series: "tube", application: "industrial", 
+            weights: { "12ft": [1.650], "15ft": [2.100] } 
+        },
+        { 
+            id: "SRT_012", dieNo: "SRT 012", name: "75x25 RT", 
+            series: "tube", application: "industrial", 
+            weights: { 
+                "12ft": [2.600, 3.800], 
+                "15ft": [2.300, 3.300, 4.650] 
+            } 
+        },
+        { 
+            id: "SRT_013", dieNo: "SRT 013", name: "100x25 RT", 
+            series: "tube", application: "industrial", 
+            weights: { "15ft": [3.100] } 
+        },
+        { 
+            id: "SRT_014", dieNo: "SRT 014", name: "125x25 RT", 
+            series: "tube", application: "industrial", 
+            weights: { "15ft": [4.600] } 
+        },
+        { 
+            id: "SRT_015", dieNo: "SRT 015", name: "50x38 RT", 
+            series: "tube", application: "industrial", 
+            weights: { "12ft": [2.350], "15ft": [2.900] } 
+        },
+        { 
+            id: "SRT_016", dieNo: "SRT 016", name: "63x38 RT", 
+            series: "tube", application: "industrial", 
+            weights: { 
+                "12ft": [1.900, 2.400, 2.800, 3.600], 
+                "15ft": [2.400, 3.000, 3.500, 4.400] 
+            } 
+        },
+        { 
+            id: "SRT_017", dieNo: "SRT 017", name: "75x38 RT", 
+            series: "tube", application: "industrial", 
+            weights: { "12ft": [3.600], "15ft": [4.500] } 
+        },
+        { 
+            id: "SRT_018", dieNo: "SRT 018", name: "100x44 RT", 
+            series: "tube", application: "industrial", 
+            weights: { "12ft": [4.100], "15ft": [5.200] } 
+        },
+        { 
+            id: "SRT_019", dieNo: "SRT 019", name: "25x25 Sq. Tube", 
+            series: "tube", application: "industrial", 
+            weights: { "15ft": [1.400] } 
+        },
+        { 
+            id: "SRT_020", dieNo: "SRT 020", name: "38x38 Sq. Tube", 
+            series: "tube", application: "industrial", 
+            weights: { "12ft": [1.650], "15ft": [2.000] } 
+        },
+        { 
+            id: "SRT_021", dieNo: "SRT 021", name: "50x50 Sq. Tube", 
+            series: "tube", application: "industrial", 
+            weights: { "12ft": [2.000], "15ft": [2.450] } 
+        },
+
+        // ==========================================
+        // AUXILIARY (ANGLE + T PATTI + MOSQ. CHANNEL)
+        // ==========================================
+        { 
+            id: "SAN_001", dieNo: "SAN 001", name: "19x19 Angle", 
+            series: "auxiliary", application: "industrial", 
+            weights: { "12ft": [0.700] } 
+        },
+        { 
+            id: "SAN_002", dieNo: "SAN 002", name: "25x25 Angle", 
+            series: "auxiliary", application: "industrial", 
+            weights: { "12ft": [1.000] } 
+        },
+        { 
+            id: "SAN_003", dieNo: "SAN 003", name: "38x25 Angle", 
+            series: "auxiliary", application: "industrial", 
+            weights: { "12ft": [1.250] } 
+        },
+        { 
+            id: "SAN_004", dieNo: "SAN 004", name: "30x30 Angle", 
+            series: "auxiliary", application: "industrial", 
+            weights: { "12ft": [1.400] } 
+        },
+        { 
+            id: "SAN_005", dieNo: "SAN 005", name: "38x38 Angle", 
+            series: "auxiliary", application: "industrial", 
+            weights: { "12ft": [2.200] } 
+        },
+        { 
+            id: "SAN_006", dieNo: "SAN 006", name: "50x50 Angle", 
+            series: "auxiliary", application: "industrial", 
+            weights: { "12ft": [1.700] } 
+        },
+        { 
+            id: "STP_007", dieNo: "STP 007", name: "19mm T Patti", 
+            series: "auxiliary", application: "hardware", 
+            weights: { "12ft": [0.350] } 
+        },
+        { 
+            id: "STP_008", dieNo: "STP 008", name: "25mm T Patti", 
+            series: "auxiliary", application: "hardware", 
+            weights: { "12ft": [0.450] } 
+        },
+        { 
+            id: "SUC_009", dieNo: "SUC 009", name: "9x9 U Channel", 
+            series: "auxiliary", application: "hardware", 
+            weights: { "12ft": [0.180] } 
+        },
+        { 
+            id: "SUC_010", dieNo: "SUC 010", name: "12x12 U Channel", 
+            series: "auxiliary", application: "hardware", 
+            weights: { "12ft": [0.250] } 
+        },
+        { 
+            id: "SUC_011", dieNo: "SUC 011", name: "9x16 U Channel", 
+            series: "auxiliary", application: "hardware", 
+            weights: { "16ft": [0.650] } 
+        },
+        { 
+            id: "SDC_012", dieNo: "SDC 012", name: "D Clip (Half Round)", 
+            series: "auxiliary", application: "hardware", 
+            weights: { "16ft": [0.400] } 
+        },
+        { 
+            id: "SMP_013", dieNo: "SMP 013", name: "M Patti", 
+            series: "auxiliary", application: "hardware", 
+            weights: { "16ft": [0.400] } 
+        },
+
+        // ==========================================
+        // 23MM MINI DOMAL SERIES
+        // ==========================================
+        { 
+            id: "SSD_001", dieNo: "SSD 001", name: "23mm 3 Track (Plain)", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [3.500, 3.900] } 
+        },
+        { 
+            id: "SSD_002", dieNo: "SSD 002", name: "23mm 3 Track (Box)", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [4.600] } 
+        },
+        { 
+            id: "SSD_003", dieNo: "SSD 003", name: "23mm 3 Track (Angle)", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [2.850, 3.500] } 
+        },
+        { 
+            id: "SSD_004", dieNo: "SSD 004", name: "23mm 2 Track (Plain)", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [2.600] } 
+        },
+        { 
+            id: "SSD_005", dieNo: "SSD 005", name: "23mm 2 Track (Box)", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [2.700] } 
+        },
+        { 
+            id: "SSD_006", dieNo: "SSD 006", name: "23mm 2 Track (Angle)", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [1.900] } 
+        },
+        { 
+            id: "SSD_007", dieNo: "SSD 007", name: "23mm 2 Track Grill Frame", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [4.200] } 
+        },
+        { 
+            id: "SSD_008", dieNo: "SSD 008", name: "23mm 3 Track Grill Frame", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [5.900] } 
+        },
+        { 
+            id: "SSD_009", dieNo: "SSD 009", name: "23mm Shutter", 
+            series: "domal", application: "shutter", 
+            weights: { "16ft": [2.300] } 
+        },
+        { 
+            id: "SSD_010", dieNo: "SSD 010", name: "23mm Interlock", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [1.000] } 
+        },
+
+        // ==========================================
+        // 26MM CARDINAL SERIES
+        // ==========================================
+        { 
+            id: "SDV_2601", dieNo: "SDV 2601", name: "26mm 2 Track Cardinal", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [3.600] } 
+        },
+        { 
+            id: "SDV_2602", dieNo: "SDV 2602", name: "26mm 2T Cardinal-Big", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [3.600] } 
+        },
+        { 
+            id: "SDV_2603", dieNo: "SDV 2603", name: "26mm 3 Track Cardinal", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [4.900, 5.900] } 
+        },
+        { 
+            id: "SDV_2604", dieNo: "SDV 2604", name: "26mm 3T Cardinal-Big", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [5.900] } 
+        },
+        { 
+            id: "SDV_2605", dieNo: "SDV 2605", name: "26mm 2T + Grill Cardinal", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [5.600] } 
+        },
+        { 
+            id: "SDV_2610", dieNo: "SDV 2610", name: "26mm 2T + Grill Cardinal - Big", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [4.900] } 
+        },
+        { 
+            id: "SDV_2606", dieNo: "SDV 2606", name: "26mm 3T + Grill Cardinal", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [8.800] } 
+        },
+        { 
+            id: "SDV_2607", dieNo: "SDV 2607", name: "26mm 4 Track Cardinal", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [8.800] } 
+        },
+        { 
+            id: "SDV_2608", dieNo: "SDV 2608", name: "26mm V Track Cap (V)", 
+            series: "cardinal", application: "hardware", 
+            weights: { "16ft": [0.350] } 
+        },
+        { 
+            id: "SDV_2609", dieNo: "SDV 2609", name: "26mm V Track Cap (U)", 
+            series: "cardinal", application: "hardware", 
+            weights: { "16ft": [0.350] } 
+        },
+
+        // ==========================================
+        // 26MM GULF SERIES
+        // ==========================================
+        { 
+            id: "S26G_001", dieNo: "S26G 001", name: "26mm 2T Bottom Gulf", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [4.500] } 
+        },
+        { 
+            id: "S26G_002", dieNo: "S26G 002", name: "26mm 2T Vertical Gulf", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [2.800] } 
+        },
+        { 
+            id: "S26G_003", dieNo: "S26G 003", name: "26mm 2T Bottom (U) Gulf", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [4.700] } 
+        },
+        { 
+            id: "S26G_004", dieNo: "S26G 004", name: "26mm 3T Bottom Gulf", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [7.400] } 
+        },
+        { 
+            id: "S26G_005", dieNo: "S26G 005", name: "26mm 3T Vertical Gulf", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [4.000] } 
+        },
+        { 
+            id: "S26G_006", dieNo: "S26G 006", name: "26mm 3T Bottom (U) Gulf", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [6.800] } 
+        },
+        { 
+            id: "S26G_007", dieNo: "S26G 007", name: "26mm Top Adapter Gulf", 
+            series: "gulf", application: "hardware", 
+            weights: { "16ft": [0.760] } 
+        },
+        { 
+            id: "S26G_008", dieNo: "S26G 008", name: "26mm Track Cap Gulf", 
+            series: "gulf", application: "hardware", 
+            weights: { "16ft": [0.650] } 
+        },
+        { 
+            id: "S26G_009", dieNo: "S26G 009", name: "26mm Track Adapter Gulf", 
+            series: "gulf", application: "hardware", 
+            weights: { "16ft": [0.760] } 
+        },
+        { 
+            id: "S26G_010", dieNo: "S26G 010", name: "26mm Top Bottom Gulf", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [3.400] } 
+        },
+
+        // ==========================================
+        // 26MM DOMAL SERIES
+        // ==========================================
+        { 
+            id: "S26D_021", dieNo: "S26D 021", name: "26mm Single Track", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [2.700] } 
+        },
+        { 
+            id: "S26D_001", dieNo: "S26D 001", name: "26mm D 2T Frame", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [3.100, 3.700] } 
+        },
+        { 
+            id: "S26D_002", dieNo: "S26D 002", name: "26mm D 2T + Cover", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [4.100] } 
+        },
+        { 
+            id: "S26D_003", dieNo: "S26D 003", name: "26mm D 3T Frame", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [4.600, 5.200, 6.600] } 
+        },
+        { 
+            id: "S26D_004", dieNo: "S26D 004", name: "26mm D 3T + Cover", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [6.400] } 
+        },
+        { 
+            id: "S26D_005", dieNo: "S26D 005", name: "26mm D 3T (Plain)", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [5.500] } 
+        },
+        { 
+            id: "S26D_006", dieNo: "S26D 006", name: "26mm D 4T Frame", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [8.000] } 
+        },
+        { 
+            id: "S26D_007", dieNo: "S26D 007", name: "26mm D 2T + Grill", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [4.500, 4.900] } 
+        },
+        { 
+            id: "S26D_008", dieNo: "S26D 008", name: "26mm D 3T + Grill", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [6.900, 7.800] } 
+        },
+        { 
+            id: "S26D_009", dieNo: "S26D 009", name: "26mm D 3in1 Frame", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [5.800] } 
+        },
+        { 
+            id: "S26D_010", dieNo: "S26D 010", name: "26mm D. Shutter", 
+            series: "domal", application: "shutter", 
+            weights: { "16ft": [2.500, 2.650, 2.900, 3.250, 3.400, 3.850, 4.050] } 
+        },
+        { 
+            id: "S26D_011", dieNo: "S26D 011", name: "26mm Euro Shutter", 
+            series: "domal", application: "shutter", 
+            weights: { "16ft": [3.100, 3.550] } 
+        },
+        { 
+            id: "S26D_012", dieNo: "S26D 012", name: "26x60 Domal Shutter", 
+            series: "domal", application: "shutter", 
+            weights: { "16ft": [2.800] } 
+        },
+        { 
+            id: "S26D_013", dieNo: "S26D 013", name: "27mm DGU Shutter", 
+            series: "domal", application: "shutter", 
+            weights: { "16ft": [3.700] } 
+        },
+        { 
+            id: "S26D_014", dieNo: "S26D 014", name: "27mm Euro DGU Shutter", 
+            series: "domal", application: "shutter", 
+            weights: { "16ft": [3.850] } 
+        },
+        { 
+            id: "S26D_015", dieNo: "S26D 015", name: "26mm Interlock", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [1.250] } 
+        },
+        { 
+            id: "S26D_016", dieNo: "S26D 016", name: "26mm Slim Interlock", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [2.600] } 
+        },
+        { 
+            id: "S26D_017", dieNo: "S26D 017", name: "26mm KPA Interlock", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [4.300] } 
+        },
+        { 
+            id: "S26D_018", dieNo: "S26D 018", name: "27mm DGU Interlock", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [2.400] } 
+        },
+        { 
+            id: "S26D_019", dieNo: "S26D 019", name: "27mm DGU KPA Interlock", 
+            series: "domal", application: "windows", 
+            weights: { "16ft": [4.300] } 
+        },
+        { 
+            id: "S26D_020", dieNo: "S26D 020", name: "Meeting Patti (Topi)", 
+            series: "domal", application: "hardware", 
+            weights: { "16ft": [1.400] } 
+        },
+
+        // ==========================================
+        // R40 Z OPENABLE SERIES
+        // ==========================================
+        { 
+            id: "SR40_001", dieNo: "SR40 001", name: "Single Frame (R 40)", 
+            series: "r40", application: "windows", 
+            weights: { "16ft": [2.400, 2.800, 3.150] } 
+        },
+        { 
+            id: "SR40_002", dieNo: "SR40 002", name: "Single Frame (Light Weight)", 
+            series: "r40", application: "windows", 
+            weights: { "16ft": [2.000] } 
+        },
+        { 
+            id: "SR40_003", dieNo: "SR40 003", name: "2 in 1 Frame", 
+            series: "r40", application: "windows", 
+            weights: { "16ft": [3.850, 4.500, 5.900] } 
+        },
+        { 
+            id: "SR40_004", dieNo: "SR40 004", name: "3 in 1 Frame", 
+            series: "r40", application: "windows", 
+            weights: { "16ft": [5.600, 6.100, 7.500] } 
+        },
+        { 
+            id: "SR40_005", dieNo: "SR40 005", name: "Shutter 51mm", 
+            series: "r40", application: "shutter", 
+            weights: { "16ft": [2.900, 3.150, 3.500] } 
+        },
+        { 
+            id: "SR40_006", dieNo: "SR40 006", name: "Shutter 65mm", 
+            series: "r40", application: "shutter", 
+            weights: { "16ft": [3.100, 3.400, 4.500] } 
+        },
+        { 
+            id: "SR40_007", dieNo: "SR40 007", name: "Molding Shutter", 
+            series: "r40", application: "shutter", 
+            weights: { "16ft": [3.350] } 
+        },
+        { 
+            id: "SR40_008", dieNo: "SR40 008", name: "Profile Shutter", 
+            series: "r40", application: "shutter", 
+            weights: { "16ft": [3.350] } 
+        },
+        { 
+            id: "SR40_009", dieNo: "SR40 009", name: "Molding Groove Shutter", 
+            series: "r40", application: "shutter", 
+            weights: { "16ft": [3.200] } 
+        },
+        { 
+            id: "SR40_010", dieNo: "SR40 010", name: "DGU Shutter", 
+            series: "r40", application: "shutter", 
+            weights: { "16ft": [3.700] } 
+        },
+        { 
+            id: "SR40_011", dieNo: "SR40 011", name: "SGU Clip", 
+            series: "r40", application: "hardware", 
+            weights: { "16ft": [1.000] } 
+        },
+        { 
+            id: "SR40_012", dieNo: "SR40 012", name: "Laminate Clip", 
+            series: "r40", application: "hardware", 
+            weights: { "16ft": [0.900] } 
+        },
+        { 
+            id: "SR40_013", dieNo: "SR40 013", name: "DGU Clip", 
+            series: "r40", application: "hardware", 
+            weights: { "16ft": [1.400] } 
+        },
+        { 
+            id: "SR40_014", dieNo: "SR40 014", name: "Single Mulium 71mm", 
+            series: "r40", application: "windows", 
+            weights: { "16ft": [4.000] } 
+        },
+        { 
+            id: "SR40_015", dieNo: "SR40 015", name: "2in1 Mulium", 
+            series: "r40", application: "windows", 
+            weights: { "16ft": [5.600] } 
+        },
+        { 
+            id: "SR40_016", dieNo: "SR40 016", name: "3in1 Mulium", 
+            series: "r40", application: "windows", 
+            weights: { "16ft": [5.400] } 
+        },
+        { 
+            id: "SR40_017", dieNo: "SR40 017", name: "R40 Fly Mulium", 
+            series: "r40", application: "windows", 
+            weights: { "16ft": [3.100] } 
+        },
+        { 
+            id: "SR40_018", dieNo: "SR40 018", name: "R40 Small Mulium EL", 
+            series: "r40", application: "windows", 
+            weights: { "16ft": [3.100] } 
+        },
+        { 
+            id: "SR40_019", dieNo: "SR40 019", name: "R40 Small Mulium With Groove (Jindal)", 
+            series: "r40", application: "windows", 
+            weights: { "16ft": [3.450] } 
+        },
+        { 
+            id: "SR40_020", dieNo: "SR40 020", name: "R40 Big Mulium", 
+            series: "r40", application: "windows", 
+            weights: { "16ft": [3.800] } 
+        },
+        { 
+            id: "SR40_021", dieNo: "SR40 021", name: "R40 Reverse Adapter", 
+            series: "r40", application: "hardware", 
+            weights: { "16ft": [1.500] } 
+        },
+        { 
+            id: "SR40_022", dieNo: "SR40 022", name: "23x50 Mosq. Shutter", 
+            series: "r40", application: "shutter", 
+            weights: { "16ft": [2.300] } 
+        },
+
+        // ==========================================
+        // R50 Z OPENABLE SERIES
+        // ==========================================
+        { 
+            id: "SR50_001", dieNo: "SR50 001", name: "Window Frame", 
+            series: "r50", application: "windows", 
+            weights: { "16ft": [3.700] } 
+        },
+        { 
+            id: "SR50_002", dieNo: "SR50 002", name: "Door Frame", 
+            series: "r50", application: "doors", 
+            weights: { "16ft": [5.200] } 
+        },
+        { 
+            id: "SR50_003", dieNo: "SR50 003", name: "Window 2in1 Frame", 
+            series: "r50", application: "windows", 
+            weights: { "16ft": [5.000] } 
+        },
+        { 
+            id: "SR50_004", dieNo: "SR50 004", name: "Window Mulium", 
+            series: "r50", application: "windows", 
+            weights: { "16ft": [5.200] } 
+        },
+        { 
+            id: "SR50_005", dieNo: "SR50 005", name: "Door Mulium", 
+            series: "r50", application: "doors", 
+            weights: { "16ft": [6.000] } 
+        },
+        { 
+            id: "SR50_006", dieNo: "SR50 006", name: "Window Shutter", 
+            series: "r50", application: "shutter", 
+            weights: { "16ft": [5.000] } 
+        },
+        { 
+            id: "SR50_007", dieNo: "SR50 007", name: "Inside Ope. Shutter", 
+            series: "r50", application: "shutter", 
+            weights: { "16ft": [6.700] } 
+        },
+        { 
+            id: "SR50_008", dieNo: "SR50 008", name: "Outside Ope. Shutter", 
+            series: "r50", application: "shutter", 
+            weights: { "16ft": [6.700] } 
+        },
+        { 
+            id: "SR50_009", dieNo: "SR50 009", name: "SGU Clip", 
+            series: "r50", application: "hardware", 
+            weights: { "16ft": [1.650] } 
+        },
+        { 
+            id: "SR50_010", dieNo: "SR50 010", name: "DGU Clip", 
+            series: "r50", application: "hardware", 
+            weights: { "16ft": [1.400] } 
+        },
+        { 
+            id: "SR50_011", dieNo: "SR50 011", name: "Fly Mullium", 
+            series: "r50", application: "windows", 
+            weights: { "16ft": [3.500] } 
+        },
+        { 
+            id: "SR50_012", dieNo: "SR50 012", name: "Bottom Adapter", 
+            series: "r50", application: "hardware", 
+            weights: { "16ft": [3.000] } 
+        },
+        { 
+            id: "SR50_013", dieNo: "SR50 013", name: "Multy Lock Patti", 
+            series: "r50", application: "hardware", 
+            weights: { "12ft": [0.500] } 
+        },
+        { 
+            id: "SR50_014", dieNo: "SR50 014", name: "R50 Reverse Adapter", 
+            series: "r50", application: "hardware", 
+            weights: { "16ft": [1.700] } 
+        },
+
+        // ==========================================
+        // 29MM VENTANA SERIES
+        // ==========================================
+        { 
+            id: "S29V_001", dieNo: "S29V 001", name: "29mm 2T + Cover (Plain)", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [5.700] } 
+        },
+        { 
+            id: "S29V_002", dieNo: "S29V 002", name: "29mm 2T + Cover", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [5.900] } 
+        },
+        { 
+            id: "S29V_003", dieNo: "S29V 003", name: "29mm 2T (Regular)", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [5.300] } 
+        },
+        { 
+            id: "S29V_004", dieNo: "S29V 004", name: "29mm 2T (One Side Open)", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [5.300] } 
+        },
+        { 
+            id: "S29V_005", dieNo: "S29V 005", name: "29mm 3T + Cover (Plain)", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [8.400] } 
+        },
+        { 
+            id: "S29V_006", dieNo: "S29V 006", name: "29mm 3T + Cover", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [8.100, 9.200] } 
+        },
+        { 
+            id: "S29V_007", dieNo: "S29V 007", name: "29mm 3T (Regular)", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [7.800] } 
+        },
+        { 
+            id: "S29V_008", dieNo: "S29V 008", name: "29mm 3T (One Side Open)", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [7.800] } 
+        },
+        { 
+            id: "S29V_009", dieNo: "S29V 009", name: "29mm 2T + Grill", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [7.000] } 
+        },
+        { 
+            id: "S29V_010", dieNo: "S29V 010", name: "29mm 3in1 Frame", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [7.300] } 
+        },
+        { 
+            id: "S29V_011", dieNo: "S29V 011", name: "29mm 3T + Grill (Jindal)", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [10.100] } 
+        },
+        { 
+            id: "S29V_012", dieNo: "S29V 012", name: "29mm Shutter Regular", 
+            series: "ventana", application: "shutter", 
+            weights: { "16ft": [3.900, 4.400] } 
+        },
+        { 
+            id: "S29V_025", dieNo: "S29V 025", name: "29mm Shutter (New)", 
+            series: "ventana", application: "shutter", 
+            weights: { "16ft": [3.700] } 
+        },
+        { 
+            id: "S29V_013", dieNo: "S29V 013", name: "29mm Shutter Square", 
+            series: "ventana", application: "shutter", 
+            weights: { "16ft": [3.700] } 
+        },
+        { 
+            id: "S29V_014", dieNo: "S29V 014", name: "29mm DGU Shutter", 
+            series: "ventana", application: "shutter", 
+            weights: { "16ft": [3.800] } 
+        },
+        { 
+            id: "S29V_015", dieNo: "S29V 015", name: "29mm Interlock", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [1.650] } 
+        },
+        { 
+            id: "S29V_016", dieNo: "S29V 016", name: "29mm Slim Interlock", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [3.250] } 
+        },
+        { 
+            id: "S29V_026", dieNo: "S29V 026", name: "29mm Slim Interlock (New)", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [2.600] } 
+        },
+        { 
+            id: "S29V_017", dieNo: "S29V 017", name: "29mm KPA Interlock", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [5.000] } 
+        },
+        { 
+            id: "S29V_027", dieNo: "S29V 027", name: "29mm KPA Interlock (New)", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [4.400] } 
+        },
+        { 
+            id: "S29V_018", dieNo: "S29V 018", name: "29mm DGU Interlock", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [2.600] } 
+        },
+        { 
+            id: "S29V_019", dieNo: "S29V 019", name: "29mm DGU KPA Interlock", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [4.500] } 
+        },
+        { 
+            id: "S29V_020", dieNo: "S29V 020", name: "Track Cap (V)", 
+            series: "ventana", application: "hardware", 
+            weights: { "16ft": [0.800] } 
+        },
+        { 
+            id: "S29V_021", dieNo: "S29V 021", name: "Track Cap (0)", 
+            series: "ventana", application: "hardware", 
+            weights: { "16ft": [0.860] } 
+        },
+        { 
+            id: "S29V_022", dieNo: "S29V 022", name: "Meeting Patti", 
+            series: "ventana", application: "hardware", 
+            weights: { "16ft": [1.800] } 
+        },
+        { 
+            id: "S29V_023", dieNo: "S29V 023", name: "H Adapter", 
+            series: "ventana", application: "hardware", 
+            weights: { "16ft": [0.550] } 
+        },
+        { 
+            id: "S29V_024", dieNo: "S29V 024", name: "29mm Middle", 
+            series: "ventana", application: "windows", 
+            weights: { "16ft": [3.250] } 
+        },
+
+        // ==========================================
+        // 29MM GULF SERIES
+        // ==========================================
+        { 
+            id: "S29G_001", dieNo: "S29G 001", name: "29mm G. 2T Bottom", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [5.300] } 
+        },
+        { 
+            id: "S29G_002", dieNo: "S29G 002", name: "29mm G. 2T Vertical", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [3.700] } 
+        },
+        { 
+            id: "S29G_003", dieNo: "S29G 003", name: "29mm G. 3T Bottom", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [7.800] } 
+        },
+        { 
+            id: "S29G_004", dieNo: "S29G 004", name: "29mm G. 3T Vertical", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [5.150] } 
+        },
+        { 
+            id: "S29G_005", dieNo: "S29G 005", name: "29mm G. Track Adapter", 
+            series: "gulf", application: "hardware", 
+            weights: { "16ft": [0.750] } 
+        },
+        { 
+            id: "S29G_006", dieNo: "S29G 006", name: "29mm G. Top Adapter", 
+            series: "gulf", application: "hardware", 
+            weights: { "16ft": [0.750] } 
+        },
+        { 
+            id: "S29G_007", dieNo: "S29G 007", name: "29mm G. Top Bottom", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [4.400] } 
+        },
+
+        // ==========================================
+        // 32MM CARDINAL SERIES
+        // ==========================================
+        { 
+            id: "S32V_001", dieNo: "S32V 001", name: "32mm 2T Ventana", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [7.300] } 
+        },
+        { 
+            id: "S32V_002", dieNo: "S32V 002", name: "32mm 3T Ventana", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [10.800] } 
+        },
+        { 
+            id: "S32V_003", dieNo: "S32V 003", name: "32mm Shutter", 
+            series: "cardinal", application: "shutter", 
+            weights: { "16ft": [4.300] } 
+        },
+        { 
+            id: "S32V_004", dieNo: "S32V 004", name: "32mm Slim Interlock", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [3.200] } 
+        },
+        { 
+            id: "S32V_005", dieNo: "S32V 005", name: "32mm SS Rail Receiver", 
+            series: "cardinal", application: "hardware", 
+            weights: { "16ft": [0.800] } 
+        },
+        { 
+            id: "S32V_006", dieNo: "S32V 006", name: "32mm KPA Interlock", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [6.400] } 
+        },
+        { 
+            id: "S32V_007", dieNo: "S32V 007", name: "32mm SGU Reducer Clip", 
+            series: "cardinal", application: "hardware", 
+            weights: { "16ft": [1.200] } 
+        },
+        { 
+            id: "S32V_008", dieNo: "S32V 008", name: "32mm Laminate Reducer Clip", 
+            series: "cardinal", application: "hardware", 
+            weights: { "16ft": [1.100] } 
+        },
+
+        // ==========================================
+        // 35x75 CARDINAL SERIES
+        // ==========================================
+        { 
+            id: "S35V_001", dieNo: "S35V 001", name: "35mm 2T + Cover", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [6.300] } 
+        },
+        { 
+            id: "S35V_002", dieNo: "S35V 002", name: "35mm 3T + Cover", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [9.400] } 
+        },
+        { 
+            id: "S35V_003", dieNo: "S35V 003", name: "35mm 2T + Grill (Jindal)", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [7.150] } 
+        },
+        { 
+            id: "S35V_004", dieNo: "S35V 004", name: "35mm 3T + Grill (Jindal)", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [11.300] } 
+        },
+        { 
+            id: "S35V_005", dieNo: "S35V 005", name: "35mm Shutter", 
+            series: "cardinal", application: "shutter", 
+            weights: { "16ft": [5.700] } 
+        },
+        { 
+            id: "S35V_006", dieNo: "S35V 006", name: "35mm Laminate Shutter", 
+            series: "cardinal", application: "shutter", 
+            weights: { "16ft": [5.800] } 
+        },
+        { 
+            id: "S35V_007", dieNo: "S35V 007", name: "35mm DGU Shutter", 
+            series: "cardinal", application: "shutter", 
+            weights: { "16ft": [5.300] } 
+        },
+        { 
+            id: "S35V_008", dieNo: "S35V 008", name: "35mm Interlock", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [2.100] } 
+        },
+        { 
+            id: "S35V_009", dieNo: "S35V 009", name: "35mm Slim Interlock", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [3.700] } 
+        },
+        { 
+            id: "S35V_010", dieNo: "S35V 010", name: "35mm Slim KPA Interlock", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [5.800] } 
+        },
+        { 
+            id: "S35V_011", dieNo: "S35V 011", name: "35mm DGU Slim Interlock", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [3.500] } 
+        },
+        { 
+            id: "S35V_012", dieNo: "S35V 012", name: "35mm DGU KPA Interlock", 
+            series: "cardinal", application: "windows", 
+            weights: { "16ft": [5.700] } 
+        },
+
+        // ==========================================
+        // GRILL SECTION
+        // ==========================================
+        { 
+            id: "SGR_001", dieNo: "SGR 001", name: "30mm Grill Box Pipe", 
+            series: "grill", application: "windows", 
+            weights: { "16ft": [1.500] } 
+        },
+        { 
+            id: "SGR_002", dieNo: "SGR 002", name: "35mm Grill Box Pipe", 
+            series: "grill", application: "windows", 
+            weights: { "16ft": [1.900] } 
+        },
+        { 
+            id: "SGR_003", dieNo: "SGR 003", name: "29x18 RT With Mindi", 
+            series: "grill", application: "windows", 
+            weights: { "16ft": [1.600] } 
+        },
+        { 
+            id: "SGR_004", dieNo: "SGR 004", name: "29x30 RT With Mindi", 
+            series: "grill", application: "windows", 
+            weights: { "16ft": [1.950] } 
+        },
+        { 
+            id: "SGR_005", dieNo: "SGR 005", name: "35x35 RT With Mindi", 
+            series: "grill", application: "windows", 
+            weights: { "16ft": [2.000] } 
+        },
+        { 
+            id: "SGR_006", dieNo: "SGR 006", name: "19mm Round Pipe", 
+            series: "grill", application: "industrial", 
+            weights: { "16ft": [0.800] } 
+        },
+        { 
+            id: "SGR_007", dieNo: "SGR 007", name: "16mm Round Pipe", 
+            series: "grill", application: "industrial", 
+            weights: { "16ft": [0.520] } 
+        },
+        { 
+            id: "SGR_008", dieNo: "SGR 008", name: "Capsule Pipe With Mindi", 
+            series: "grill", application: "windows", 
+            weights: { "16ft": [1.400] } 
+        },
+        { 
+            id: "SGR_009", dieNo: "SGR 009", name: "Capsule Pipe (Half Round)", 
+            series: "grill", application: "windows", 
+            weights: { "16ft": [1.450] } 
+        },
+        { 
+            id: "SGR_010", dieNo: "SGR 010", name: "63mm Louver", 
+            series: "grill", application: "hardware", 
+            weights: { "16ft": [1.050] } 
+        },
+
+        // ==========================================
+        // SLIDING FOLDING 50MM SERIES
+        // ==========================================
+        { 
+            id: "SSF_001", dieNo: "SSF 001", name: "Side Frame", 
+            series: "sliding_folding", application: "doors", 
+            weights: { "16ft": [4.300] } 
+        },
+        { 
+            id: "SSF_002", dieNo: "SSF 002", name: "Top Frame", 
+            series: "sliding_folding", application: "doors", 
+            weights: { "16ft": [10.000] } 
+        },
+        { 
+            id: "SSF_003", dieNo: "SSF 003", name: "Bottom Frame", 
+            series: "sliding_folding", application: "doors", 
+            weights: { "16ft": [4.000] } 
+        },
+        { 
+            id: "SSF_004", dieNo: "SSF 004", name: "Shutter DGU", 
+            series: "sliding_folding", application: "shutter", 
+            weights: { "16ft": [5.200, 5.900] } 
+        },
+        { 
+            id: "SSF_005", dieNo: "SSF 005", name: "Shutter SGU", 
+            series: "sliding_folding", application: "shutter", 
+            weights: { "16ft": [7.400] } 
+        },
+        { 
+            id: "SSF_006", dieNo: "SSF 006", name: "DGU Shutter (Groove)", 
+            series: "sliding_folding", application: "shutter", 
+            weights: { "16ft": [6.000] } 
+        },
+        { 
+            id: "SSF_007", dieNo: "SSF 007", name: "Laminate Clip", 
+            series: "sliding_folding", application: "hardware", 
+            weights: { "16ft": [1.100] } 
+        },
+        { 
+            id: "SSF_008", dieNo: "SSF 008", name: "SGU Clip", 
+            series: "sliding_folding", application: "hardware", 
+            weights: { "16ft": [1.650] } 
+        },
+        { 
+            id: "SSF_012", dieNo: "SSF 012", name: "DGU Clip", 
+            series: "sliding_folding", application: "hardware", 
+            weights: { "16ft": [1.400] } 
+        },
+        { 
+            id: "SSF_009", dieNo: "SSF 009", name: "Center Adapter", 
+            series: "sliding_folding", application: "hardware", 
+            weights: { "16ft": [2.500] } 
+        },
+        { 
+            id: "SSF_010", dieNo: "SSF 010", name: "SGU Reducer Clip", 
+            series: "sliding_folding", application: "hardware", 
+            weights: { "16ft": [1.200] } 
+        },
+        { 
+            id: "SSF_011", dieNo: "SSF 011", name: "Laminate Reducer Clip", 
+            series: "sliding_folding", application: "hardware", 
+            weights: { "16ft": [1.100] } 
+        },
+
+        // ==========================================
+        // SLIDING MOSQUITO NET SECTION
+        // ==========================================
+        { 
+            id: "SSMO_001", dieNo: "SSMO 001", name: "Sliding Net Handle", 
+            series: "mosquito", application: "windows", 
+            weights: { "16ft": [2.200] } 
+        },
+        { 
+            id: "SSMO_002", dieNo: "SSMO 002", name: "Sliding Net Verticle", 
+            series: "mosquito", application: "windows", 
+            weights: { "16ft": [1.300] } 
+        },
+        { 
+            id: "SSMO_003", dieNo: "SSMO 003", name: "Sliding Net Top Bottom", 
+            series: "mosquito", application: "windows", 
+            weights: { "16ft": [1.650] } 
+        },
+
+        // ==========================================
+        // ROLLER MOSQUITO NET SECTION
+        // ==========================================
+        { 
+            id: "SRMN_001", dieNo: "SRMN 001", name: "Roller Net Handle", 
+            series: "mosquito", application: "windows", 
+            weights: { "15ft": [1.200] } 
+        },
+        { 
+            id: "SRMN_002", dieNo: "SRMN 002", name: "Roller Net Vertical", 
+            series: "mosquito", application: "windows", 
+            weights: { "15ft": [1.150] } 
+        },
+        { 
+            id: "SRMN_003", dieNo: "SRMN 003", name: "Roller Net Top", 
+            series: "mosquito", application: "windows", 
+            weights: { "15ft": [2.100] } 
+        },
+
+        // ==========================================
+        // 35x59 GULF SERIES
+        // ==========================================
+        { 
+            id: "S35G_001", dieNo: "S35G 001", name: "35×59 2T Bottom", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [8.250] } 
+        },
+        { 
+            id: "S35G_002", dieNo: "S35G 002", name: "35×59 2T Verticle", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [6.100] } 
+        },
+        { 
+            id: "S35G_003", dieNo: "S35G 003", name: "35×59 3T Bottom", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [9.800] } 
+        },
+        { 
+            id: "S35G_004", dieNo: "S35G 004", name: "35×59 3T Verticle", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [7.250] } 
+        },
+        { 
+            id: "S35G_005", dieNo: "S35G 005", name: "35×59 Slim Interlock", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [2.900] } 
+        },
+        { 
+            id: "S35G_006", dieNo: "S35G 006", name: "35×59 Slim KPA Interlock", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [4.200] } 
+        },
+        { 
+            id: "S35G_007", dieNo: "S35G 007", name: "35×59 Shutter", 
+            series: "gulf", application: "shutter", 
+            weights: { "16ft": [4.200] } 
+        },
+        { 
+            id: "S35G_008", dieNo: "S35G 008", name: "35×59 Top Bottom", 
+            series: "gulf", application: "windows", 
+            weights: { "16ft": [4.400] } 
+        },
+        { 
+            id: "S35G_009", dieNo: "S35G 009", name: "35×59 Mesh Shutter", 
+            series: "gulf", application: "shutter", 
+            weights: { "16ft": [1.150] } 
+        },
+        { 
+            id: "S35G_010", dieNo: "S35G 010", name: "35×59 SGU Adapter", 
+            series: "gulf", application: "hardware", 
+            weights: { "16ft": [1.100] } 
+        },
+        { 
+            id: "S35G_011", dieNo: "S35G 011", name: "35×59 Track Adapter", 
+            series: "gulf", application: "hardware", 
+            weights: { "16ft": [1.100] } 
+        },
+        { 
+            id: "S35G_012", dieNo: "S35G 012", name: "35×59 Track Cap (U)", 
+            series: "gulf", application: "hardware", 
+            weights: { "16ft": [0.900] } 
+        },
+        { 
+            id: "S35G_013", dieNo: "S35G 013", name: "35×59 Track Cap (V)", 
+            series: "gulf", application: "hardware", 
+            weights: { "16ft": [0.900] } 
+        },
+        { 
+            id: "S35G_014", dieNo: "S35G 014", name: "35×59 Meeting Section", 
+            series: "gulf", application: "hardware", 
+            weights: { "16ft": [2.300] } 
+        },
+
+        // ==========================================
+        // SLIMX 32 SERIES
+        // ==========================================
+        { 
+            id: "SX_001", dieNo: "SX 001", name: "2T Bottom", 
+            series: "slimX", application: "windows", 
+            weights: { "16ft": [5.780] } 
+        },
+        { 
+            id: "SX_002", dieNo: "SX 002", name: "2T Vertical", 
+            series: "slimX", application: "windows", 
+            weights: { "16ft": [7.400] } 
+        },
+        { 
+            id: "SX_003", dieNo: "SX 003", name: "2T Top", 
+            series: "slimX", application: "windows", 
+            weights: { "16ft": [8.700] } 
+        },
+        { 
+            id: "SX_004", dieNo: "SX 004", name: "Shutter", 
+            series: "slimX", application: "shutter", 
+            weights: { "16ft": [7.700] } 
+        },
+        { 
+            id: "SX_005", dieNo: "SX 005", name: "Top Bottom", 
+            series: "slimX", application: "windows", 
+            weights: { "16ft": [4.500] } 
+        },
+        { 
+            id: "SX_006", dieNo: "SX 006", name: "Slim Interlock", 
+            series: "slimX", application: "windows", 
+            weights: { "16ft": [5.700] } 
+        },
+        { 
+            id: "SX_007", dieNo: "SX 007", name: "Laminate Reducer", 
+            series: "slimX", application: "hardware", 
+            weights: { "16ft": [1.100] } 
+        },
+        { 
+            id: "SX_008", dieNo: "SX 008", name: "Center Cover", 
+            series: "slimX", application: "hardware", 
+            weights: { "16ft": [1.400] } 
+        }
+
+
+
+
+
+
+        // *** ADD THE REST OF YOUR 2000+ PRODUCTS HERE FOLLOWING THIS EXACT PATTERN ***
+    ];
+
+
+
+   // --- SMART SORTING ALGORITHM SETUP ---
+    // 1. Give every product an original index so they stay in the exact order you wrote them
+    AllProducts.forEach((p, idx) => p.originalIndex = idx);
+
+    // 2. Define your exact requested Series Sequence
+    const seriesOrder = [
+        'gulf', 'cardinal', 'ventana', 'sliding_folding', 'domal', 
+        'regular', 'r40', 'r50', 'mosquito', 'roller_mosquito', 
+        'door', 'partition', 'auxiliary', 'tube', 'grill', 'slimX', 'other'
+    ];
+
+    // --- STATE ---
+    let cart = [];
+    let hwCart = [];
+    let AllHardware = [];
+    let otherCharges = {
+    surfaceType: 'Powder Coating', surfaceAmount: 0,
+    packaging: 0, transport: 0 };
+    let currentFilters = { series: 'all', application: 'all', sortBy: 'default', searchQuery: '' };
+    let selectedProduct = null;
+    let currentFocus = -1; // For keyboard navigation
+
+    // --- DOM ELEMENTS ---
+    const productSearch = document.getElementById('productSearch');
+    const suggestions = document.getElementById('suggestions');
+    const variantBox = document.getElementById('variantBox');
+    const lengthSelect = document.getElementById('lengthSelect');
+    const weightSelect = document.getElementById('weightSelect');
+    const quantityEl = document.getElementById('quantity');
+    const addBtn = document.getElementById('addBtn');
+    const clearSearchBtn = document.getElementById('clearSearch');
+    const cartBody = document.getElementById('cartBody');
+    const totalCostEl = document.getElementById('totalCost');
+    const totalWeightEl = document.getElementById('totalWeight');
+    const pricePerKgEl = document.getElementById('pricePerKg');
+    const priceWithGSTEl = document.getElementById('priceWithGST');
+    const productList = document.getElementById('productList');
+    
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // Load LocalStorage Cart
+        const savedCart = localStorage.getItem('khidkieCart_v2');
+        if (savedCart) { cart = JSON.parse(savedCart); }
+
+        const savedHwCart = localStorage.getItem('khidkieHwCart_v2');
+        if (savedHwCart) { hwCart = JSON.parse(savedHwCart); }
+
+        const savedCharges = localStorage.getItem('khidkieCharges_v2');
+        if (savedCharges) { otherCharges = JSON.parse(savedCharges); }
+        
+        document.getElementById('openChargesBtn').addEventListener('click', openChargesModal);
+        
+        // Setup hardware button click and keyboard 'Enter' key support
+        document.getElementById('addHwBtn').addEventListener('click', addHardware);
+        document.getElementById('hwPrice').addEventListener('keydown', (e) => { if(e.key === 'Enter') addHardware(); });
+        document.getElementById('hwName').addEventListener('input', (e) => {
+            const val = e.target.value.trim().toLowerCase();
+            const match = AllHardware.find(h => h.name.toLowerCase() === val);
+            if (match) {
+                document.getElementById('hwPrice').value = match.rate;
+            }
+        });
+
+
+        // Event Listeners
+        pricePerKgEl.addEventListener('input', updateGSTPrice);
+        productSearch.addEventListener('input', onSearchInput);
+        productSearch.addEventListener('focus', renderSuggestions);
+        
+        // This ensures the suggestions ONLY close when clicking outside of it
+        document.addEventListener('click', (e) => {
+            if (!productSearch.contains(e.target) && !suggestions.contains(e.target)) {
+                suggestions.style.display = 'none';
+            }
+        });
+        
+        addBtn.addEventListener('click', addToCart);
+        clearSearchBtn.addEventListener('click', clearSelection);
+        
+        document.getElementById('filterSeries').addEventListener('change', (e) => { currentFilters.series = e.target.value; renderProductDatabase(); });
+        document.getElementById('filterApplication').addEventListener('change', (e) => { currentFilters.application = e.target.value; renderProductDatabase(); });
+        document.getElementById('sortBy').addEventListener('change', (e) => { currentFilters.sortBy = e.target.value; renderProductDatabase(); });
+        
+        // --- FEATURE 5: RECALCULATE LOGIC ---
+        document.getElementById('calcBtn').addEventListener('click', () => {
+            if (confirm("Are you sure want to recalculate everything? It will erase current quotation.")) {
+                cart = [];
+                hwCart = [];
+                otherCharges = { surfaceType: 'Powder Coating', surfaceAmount: 0, packaging: 0, transport: 0 };
+                saveCartToLocalStorage();
+                pricePerKgEl.value = '';
+                document.getElementById('priceWithGST').innerText = '₹0.00';
+                clearSelection();
+                renderCartAndTotals();
+            }
+        });
+
+        document.getElementById('printBtn').addEventListener('click', printQuotation);
+        document.getElementById('saveQuoteBtn').addEventListener('click', saveQuoteToServer);
+        document.getElementById('whatsappBtn').addEventListener('click', shareWhatsApp);
+        document.getElementById('emailBtn').addEventListener('click', shareEmail);
+
+        // Mobile Tabs
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
+        });
+
+        // CASCADING VARIANT LOGIC
+        lengthSelect.addEventListener('change', function(e) {
+            const selectedLen = e.target.value;
+            weightSelect.innerHTML = '<option value="">-- Choose Weight --</option>';
+            
+            if (selectedLen && selectedProduct && selectedProduct.weights[selectedLen]) {
+                weightSelect.disabled = false;
+                let weightsArr = selectedProduct.weights[selectedLen];
+                if (!Array.isArray(weightsArr)) weightsArr = [weightsArr]; // Safe fallback
+                
+                weightsArr.sort((a, b) => a - b).forEach(w => {
+                    weightSelect.innerHTML += `<option value="${w}">${w.toFixed(3)} kg</option>`;
+                });
+            } else {
+                weightSelect.disabled = true;
+            }
+        });
+
+        renderProductDatabase();
+        updateGSTPrice();
+        renderCartAndTotals();
+        renderMyQuotes();
+
+        // Fetch admin-added products from server and merge into AllProducts
+        fetch('/api/products')
+          .then(r => r.json())
+          .then(serverProducts => {
+            if (Array.isArray(serverProducts) && serverProducts.length > 0) {
+              serverProducts.forEach((sp, i) => {
+                const name = sp.name;
+                const dieNo = sp.die || '-';
+                const size = (sp.size || 'default').trim();
+                const weight = Number(sp.weight || 0);
+                const normalizedSeries = (sp.series || 'other').toLowerCase().replace(/\s+/g, '_');
+
+                let existing = AllProducts.find(p => p.name === name && p.dieNo === dieNo);
+                if (!existing) {
+                  existing = {
+                    id: sp._id || ('ADMIN_' + i),
+                    dieNo,
+                    name,
+                    series: normalizedSeries,
+                    application: 'other',
+                    weights: {},
+                    originalIndex: AllProducts.length
+                  };
+                  AllProducts.push(existing);
+                }
+
+                if (!existing.weights[size]) existing.weights[size] = [];
+                if (weight > 0 && !existing.weights[size].includes(weight)) {
+                  existing.weights[size].push(weight);
+                }
+                if (existing.weights[size].length === 0) {
+                  existing.weights[size].push(0);
+                }
+              });
+              // Re-render to show newly added products
+              renderProductDatabase();
+            }
+          })
+          .catch(() => { /* Server might be down, silently ignore */ });
+
+        // Fetch admin-added hardware
+        fetch('/api/hardware')
+          .then(r => r.json())
+          .then(serverHardware => {
+            if (Array.isArray(serverHardware) && serverHardware.length > 0) {
+              AllHardware = serverHardware;
+              const hwList = document.getElementById('hwList');
+              if (hwList) {
+                hwList.innerHTML = AllHardware.map(h => `<option value="${h.name}"></option>`).join('');
+              }
+            }
+          })
+          .catch(() => { /* Silent fallback */ });
+    });
+
+    function saveCartToLocalStorage() { 
+        localStorage.setItem('khidkieCart_v2', JSON.stringify(cart)); 
+        localStorage.setItem('khidkieHwCart_v2', JSON.stringify(hwCart)); 
+        localStorage.setItem('khidkieCharges_v2', JSON.stringify(otherCharges));
+
+    }
+
+    // --- other charges LOGIC ---
+
+    function openChargesModal() {
+        document.getElementById('surfaceType').value = otherCharges.surfaceType || 'Powder Coating';
+        document.getElementById('surfaceAmount').value = otherCharges.surfaceAmount || '';
+        document.getElementById('packagingAmount').value = otherCharges.packaging || '';
+        document.getElementById('transportAmount').value = otherCharges.transport || '';
+        document.getElementById('chargesModal').classList.add('show');
+    }
+
+    function closeChargesModal() {
+        document.getElementById('chargesModal').classList.remove('show');
+    }
+
+    function saveOtherCharges() {
+        otherCharges.surfaceType = document.getElementById('surfaceType').value;
+        otherCharges.surfaceAmount = parseFloat(document.getElementById('surfaceAmount').value) || 0;
+        otherCharges.packaging = parseFloat(document.getElementById('packagingAmount').value) || 0;
+        otherCharges.transport = parseFloat(document.getElementById('transportAmount').value) || 0;
+        
+        saveCartToLocalStorage();
+        renderCartAndTotals();
+        closeChargesModal();
+    }
+
+    // --- EDIT CART ITEM LOGIC ---
+    let editIndex = -1;
+    let editType = '';
+
+    window.openEditCartItem = function(index, type) {
+        editIndex = index;
+        editType = type;
+        
+        const seriesFields = document.getElementById('editSeriesFields');
+        const hardwareFields = document.getElementById('editHardwareFields');
+        const titleEl = document.getElementById('editModalTitle');
+        
+        if (type === 'profile') {
+            seriesFields.style.display = 'block';
+            hardwareFields.style.display = 'none';
+            titleEl.innerHTML = '<i class="fas fa-edit"></i> Edit Series Product';
+            
+            const item = cart[index];
+            const product = AllProducts.find(p => p.dieNo === item.dieNo || p.name === item.name);
+            if (!product) {
+                alert("Product details not found in database.");
+                return;
+            }
+            
+            document.getElementById('editProductName').innerText = `${item.name} (${item.dieNo})`;
+            
+            // Populate Size dropdown
+            const sizeSelect = document.getElementById('editLengthSelect');
+            sizeSelect.innerHTML = '';
+            if (product.weights) {
+                Object.keys(product.weights).forEach(len => {
+                    const opt = document.createElement('option');
+                    opt.value = len;
+                    opt.innerText = len;
+                    if (len === item.length) opt.selected = true;
+                    sizeSelect.appendChild(opt);
+                });
+            }
+            
+            // Helper function to update weight dropdown in modal
+            function updateEditWeights(selectedLen, selectedWtVal = null) {
+                const wtSelect = document.getElementById('editWeightSelect');
+                wtSelect.innerHTML = '';
+                if (selectedLen && product.weights[selectedLen]) {
+                    let weightsArr = product.weights[selectedLen];
+                    if (!Array.isArray(weightsArr)) weightsArr = [weightsArr];
+                    weightsArr.sort((a, b) => a - b).forEach(w => {
+                        const opt = document.createElement('option');
+                        opt.value = w;
+                        opt.innerText = `${w.toFixed(3)} kg`;
+                        if (selectedWtVal !== null && Math.abs(w - selectedWtVal) < 0.001) opt.selected = true;
+                        wtSelect.appendChild(opt);
+                    });
+                }
+            }
+            
+            // Initial weight dropdown population
+            updateEditWeights(item.length, item.weightPerPiece);
+            
+            // Handle size change in modal
+            sizeSelect.onchange = function(e) {
+                updateEditWeights(e.target.value);
+            };
+            
+            document.getElementById('editQuantity').value = item.qty;
+        } else if (type === 'hardware') {
+            seriesFields.style.display = 'none';
+            hardwareFields.style.display = 'block';
+            titleEl.innerHTML = '<i class="fas fa-edit"></i> Edit Hardware';
+            
+            const item = hwCart[index];
+            document.getElementById('editHwName').value = item.name;
+            document.getElementById('editHwPrice').value = item.price;
+            document.getElementById('editHwQty').value = item.qty;
+        }
+        
+        document.getElementById('editCartItemModal').classList.add('show');
+    };
+
+    window.closeEditModal = function() {
+        document.getElementById('editCartItemModal').classList.remove('show');
+    };
+
+    window.saveEditCartItem = function() {
+        if (editType === 'profile') {
+            if (editIndex < 0 || editIndex >= cart.length) return;
+            
+            const item = cart[editIndex];
+            const product = AllProducts.find(p => p.dieNo === item.dieNo || p.name === item.name);
+            if (!product) return;
+            
+            const selectedLen = document.getElementById('editLengthSelect').value;
+            const selectedWt = parseFloat(document.getElementById('editWeightSelect').value);
+            const qty = parseInt(document.getElementById('editQuantity').value) || 1;
+            
+            if (!selectedLen || isNaN(selectedWt)) {
+                alert('Please select both a Size and a Weight.');
+                return;
+            }
+            
+            const newCartItemId = `${product.id}_${selectedLen}_${selectedWt}`;
+            const existingItemIndex = cart.findIndex((it, idx) => it.cartItemId === newCartItemId && idx !== editIndex);
+            
+            if (existingItemIndex !== -1) {
+                // Merge with the existing item in the cart
+                cart[existingItemIndex].qty += qty;
+                cart[existingItemIndex].totalWeight = cart[existingItemIndex].qty * cart[existingItemIndex].weightPerPiece;
+                // Remove the edited item since it is now merged
+                cart.splice(editIndex, 1);
+            } else {
+                // Update the item details
+                item.length = selectedLen;
+                item.weightPerPiece = selectedWt;
+                item.qty = qty;
+                item.totalWeight = qty * selectedWt;
+                item.cartItemId = newCartItemId;
+            }
+        } else if (editType === 'hardware') {
+            if (editIndex < 0 || editIndex >= hwCart.length) return;
+            
+            const item = hwCart[editIndex];
+            const name = document.getElementById('editHwName').value.trim();
+            const price = parseFloat(document.getElementById('editHwPrice').value) || 0;
+            const qty = parseInt(document.getElementById('editHwQty').value) || 1;
+            
+            if (!name || price <= 0) {
+                alert("Please enter a valid item name and rate.");
+                return;
+            }
+            
+            item.name = name;
+            item.price = price;
+            item.qty = qty;
+        }
+        
+        saveCartToLocalStorage();
+        renderCartAndTotals();
+        closeEditModal();
+    };
+
+    // --- HARDWARE LOGIC ---
+    function addHardware() {
+        const name = document.getElementById('hwName').value.trim();
+        const qty = parseInt(document.getElementById('hwQty').value) || 1;
+        const price = parseFloat(document.getElementById('hwPrice').value) || 0;
+
+        if (!name || price <= 0) return alert("Please enter a valid item name and rate.");
+
+        hwCart.push({ name, qty, price });
+        saveCartToLocalStorage();
+        
+        // Reset fields for fast entry
+        document.getElementById('hwName').value = '';
+        document.getElementById('hwQty').value = '1';
+        document.getElementById('hwPrice').value = '';
+        document.getElementById('hwName').focus();
+
+        renderCartAndTotals();
+    }
+
+    window.removeHardware = function(index) {
+        hwCart.splice(index, 1);
+        saveCartToLocalStorage();
+        renderCartAndTotals();
+    }
+    
+    function switchTab(targetTab) {
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-tab') === targetTab));
+        document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === `tab-${targetTab}`));
+    }
+
+    // --- FEATURE 2 & 4: ADVANCED DATABASE RENDERING & SORTING ---
+    function renderProductDatabase() {
+        let filtered = AllProducts.filter(p => {
+            // Google-style Fuzzy Search
+            const queryTerms = currentFilters.searchQuery.toLowerCase().split(/\s+/).filter(t => t);
+            const searchStr = `${p.name} ${p.dieNo} ${p.series}`.toLowerCase();
+            const matchesSearch = queryTerms.every(term => searchStr.includes(term));
+
+            const matchesSeries = currentFilters.series === 'all' || p.series === currentFilters.series;
+            const matchesApp = currentFilters.application === 'all' || p.application === currentFilters.application;
+            return matchesSearch && matchesSeries && matchesApp;
+        });
+
+        // The Custom Sequence Algorithm
+        filtered.sort((a, b) => {
+            if (currentFilters.sortBy === 'default') {
+                const indexA = seriesOrder.indexOf(a.series);
+                const indexB = seriesOrder.indexOf(b.series);
+                const posA = indexA !== -1 ? indexA : 999;
+                const posB = indexB !== -1 ? indexB : 999;
+
+                if (posA !== posB) return posA - posB;
+                return a.originalIndex - b.originalIndex;
+            } else if (currentFilters.sortBy === 'name_asc') {
+                return a.name.localeCompare(b.name);
+            } else {
+                return b.name.localeCompare(a.name);
+            }
+        });
+
+        productList.innerHTML = '';
+        if (filtered.length === 0) { productList.innerHTML = '<p style="padding: 1rem;">No products match.</p>'; return; }
+
+        filtered.forEach(p => {
+            const item = document.createElement('div');
+            item.className = 'product-item';
+            item.setAttribute('tabindex', '0'); // Allows Keyboard Focus
+            item.onclick = () => selectProduct(p);
+            item.addEventListener('keydown', (e) => { if (e.key === 'Enter') selectProduct(p); });
+            
+            const sizes = Object.keys(p.weights).join(', ');
+            item.innerHTML = `
+                <div>
+                    <div class="name">${p.name}</div>
+                    <div class="details">
+                        Die: <strong>${p.dieNo}</strong> | 
+                        Series: <strong style="text-transform: capitalize; color: #c01918;">${p.series}</strong> | 
+                        Sizes: ${sizes}
+                    </div>
+                </div>
+            `;
+            productList.appendChild(item);
+        });
+        document.getElementById('productCount').textContent = `${filtered.length} products`;
+    }
+
+    // --- SEARCH / SELECT ---
+    function onSearchInput(e) {
+        currentFilters.searchQuery = e.target.value;
+        renderProductDatabase();
+        renderSuggestions();
+        variantBox.style.display = 'none';
+        selectedProduct = null;
+    }
+
+    // --- FEATURE 4: SMART SEARCH & INFINITE SUGGESTIONS ---
+    function renderSuggestions() {
+        const query = productSearch.value.toLowerCase().trim();
+        if (!query) { suggestions.style.display = 'none'; return; }
+
+        const queryTerms = query.split(/\s+/).filter(t => t);
+        
+        // Infinite Match (Removed the item limit)
+        const matches = AllProducts.filter(p => {
+            const searchStr = `${p.name} ${p.dieNo} ${p.series}`.toLowerCase();
+            return queryTerms.every(term => searchStr.includes(term));
+        });
+
+        suggestions.innerHTML = '';
+        if (matches.length === 0) { suggestions.style.display = 'none'; return; }
+
+        matches.forEach(p => {
+            const item = document.createElement('div');
+            item.className = 'suggestion-item';
+            item.onclick = () => selectProduct(p, true);
+            
+            // Format for highlighting matched text
+            let displayName = p.name;
+            let displayDie = p.dieNo;
+            queryTerms.forEach(term => {
+                const regex = new RegExp(`(${term})`, 'gi');
+                displayName = displayName.replace(regex, '<strong>$1</strong>');
+                displayDie = displayDie.replace(regex, '<strong>$1</strong>');
+            });
+
+            item.innerHTML = `${displayName} <span style="margin-top: 4px; display:block;">${p.series.toUpperCase()} | Die: ${displayDie}</span>`;
+            suggestions.appendChild(item);
+        });
+        
+        suggestions.style.display = 'block';
+        currentFocus = -1; // Reset keyboard focus
+    }
+
+    // --- FEATURE 4: CARET BROWSING (KEYBOARD NAVIGATION) ---
+    productSearch.addEventListener('keydown', function(e) {
+        let x = document.getElementById("suggestions");
+        if (x) x = x.getElementsByClassName("suggestion-item");
+        if (e.keyCode == 40) { // Arrow Down
+            currentFocus++;
+            addActive(x);
+        } else if (e.keyCode == 38) { // Arrow Up
+            currentFocus--;
+            addActive(x);
+        } else if (e.keyCode == 13) { // Enter
+            e.preventDefault();
+            if (currentFocus > -1 && x) x[currentFocus].click();
+        }
+    });
+
+    function addActive(x) {
+        if (!x) return false;
+        removeActive(x);
+        if (currentFocus >= x.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = (x.length - 1);
+        x[currentFocus].classList.add("suggestion-active");
+        x[currentFocus].scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function removeActive(x) {
+        for (let i = 0; i < x.length; i++) {
+            x[i].classList.remove("suggestion-active");
+        }
+    }
+
+    // --- FEATURE 3: FORMATTED SELECTION ---
+    function selectProduct(product, fromSuggestion = false) {
+        selectedProduct = product;
+        // Puts the formatted string into the search box: Name | Series | Die No.
+        productSearch.value = `${product.name} | ${product.series.toUpperCase()} | ${product.dieNo}`;
+        
+        variantBox.style.display = 'block';
+        lengthSelect.innerHTML = '<option value="">-- Choose Size --</option>';
+        weightSelect.innerHTML = '<option value="">-- Choose Weight --</option>';
+        weightSelect.disabled = true;
+
+        if (product.weights) {
+            Object.keys(product.weights).forEach(len => {
+                lengthSelect.innerHTML += `<option value="${len}">${len}</option>`;
+            });
+        }
+        quantityEl.value = '1';
+        if(fromSuggestion) suggestions.style.display = 'none';
+        if (window.innerWidth < 1024) switchTab('calculator');
+    }
+
+    function clearSelection() {
+        selectedProduct = null;
+        productSearch.value = '';
+        variantBox.style.display = 'none';
+        lengthSelect.innerHTML = '<option value="">-- Choose Size --</option>';
+        weightSelect.innerHTML = '<option value="">-- Choose Weight --</option>';
+        quantityEl.value = '1';
+        currentFilters.searchQuery = '';
+        renderProductDatabase();
+    }
+    function validateRequiredQuotationFields() {
+        const clientNameInput = document.getElementById('clientName');
+        const quotationNameInput = document.getElementById('quotationName');
+        const pricePerKgInput = document.getElementById('pricePerKg');
+
+        const clientName = clientNameInput.value.trim();
+        const quotationName = quotationNameInput.value.trim();
+        const pricePerKg = parseFloat(pricePerKgInput.value);
+
+        if (!clientName) {
+            alert('Company or Client name is required.');
+            clientNameInput.focus();
+            return false;
+        }
+        if (!quotationName) {
+            alert('Project / Quotation name is required.');
+            quotationNameInput.focus();
+            return false;
+        }
+        if (isNaN(pricePerKg) || pricePerKg <= 0) {
+            alert("Today's Aluminium Price (Rs / kg) is required.");
+            pricePerKgInput.focus();
+            return false;
+        }
+
+        return true;
+    }
+    // --- CART LOGIC ---
+    function addToCart() {
+        if (!validateRequiredQuotationFields()) return;
+        if (!selectedProduct) return alert('Please select a product.');
+        
+        const selectedLen = lengthSelect.value;
+        const selectedWt = parseFloat(weightSelect.value);
+        const qty = parseInt(quantityEl.value) || 1;
+
+        if (!selectedLen || isNaN(selectedWt)) return alert('Please select both a Size and a Weight.');
+
+        const cartItemId = `${selectedProduct.id}_${selectedLen}_${selectedWt}`;
+        const existingItem = cart.find(item => item.cartItemId === cartItemId);
+        
+        if (existingItem) {
+            existingItem.qty += qty;
+            existingItem.totalWeight = existingItem.qty * existingItem.weightPerPiece;
+        } else {
+            cart.push({
+                cartItemId: cartItemId,
+                name: selectedProduct.name,
+                dieNo: selectedProduct.dieNo,
+                length: selectedLen,
+                qty: qty,
+                weightPerPiece: selectedWt,
+                totalWeight: qty * selectedWt
+            });
+        }
+        renderCartAndTotals();
+        saveCartToLocalStorage();
+        clearSelection();
+    }
+
+    function renderCartAndTotals() {
+        // Render Series Products
+        cartBody.innerHTML = '';
+        let totalWeight = 0;
+        
+        cart.forEach((item, index) => {
+            totalWeight += item.totalWeight;
+            cartBody.innerHTML += `
+                <tr>
+                    <td><strong>${item.name}</strong><br><small class="note">${item.dieNo}</small></td>
+                    <td>${item.length}</td>
+                    <td>${item.qty}</td>
+                    <td>${item.weightPerPiece.toFixed(3)}</td>
+                    <td>${item.totalWeight.toFixed(3)}</td>
+                    <td style="white-space: nowrap;">
+                        <button class="btn-edit" onclick="openEditCartItem(${index}, 'profile')" title="Edit Item"><i class="fas fa-edit"></i></button>
+                        <button class="btn-remove" onclick="removeFromCart(${index})" title="Remove Item"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        // Render Hardware
+        const hwCartBody = document.getElementById('hwCartBody');
+        const hwCartContainer = document.getElementById('hwCartContainer');
+        hwCartBody.innerHTML = '';
+        let hwTotalCost = 0;
+
+        if (hwCart.length > 0) {
+            hwCartContainer.style.display = 'block';
+            hwCart.forEach((item, idx) => {
+                const lineTotalGST = item.qty * item.price * 1.18;
+                hwTotalCost += lineTotalGST;
+                hwCartBody.innerHTML += `
+                    <tr>
+                        <td><strong>${item.name}</strong></td>
+                        <td>${item.qty}</td>
+                        <td>${item.price.toFixed(2)}</td>
+                        <td>${(item.price * 1.18).toFixed(2)}</td>
+                        <td>${lineTotalGST.toFixed(2)}</td>
+                        <td style="white-space: nowrap;">
+                            <button class="btn-edit" onclick="openEditCartItem(${idx}, 'hardware')" title="Edit Item"><i class="fas fa-edit"></i></button>
+                            <button class="btn-remove" onclick="removeHardware(${idx})" title="Remove Item"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        } else {
+            hwCartContainer.style.display = 'none';
+        }
+
+        // Other Charges Calculation
+        const totalOtherCharges = otherCharges.surfaceAmount + otherCharges.packaging + otherCharges.transport;
+        
+        const chargesSummaryBox = document.getElementById('extraChargesSummary');
+        const chargesListUI = document.getElementById('chargesListUI');
+        
+        if (totalOtherCharges > 0) {
+            chargesSummaryBox.style.display = 'block';
+            let chargesHtml = '';
+            if (otherCharges.surfaceAmount > 0) chargesHtml += `<div class="charge-row-ui"><span>Surface (${otherCharges.surfaceType})</span> <strong>₹${otherCharges.surfaceAmount.toFixed(2)}</strong></div>`;
+            if (otherCharges.packaging > 0) chargesHtml += `<div class="charge-row-ui"><span>Packaging</span> <strong>₹${otherCharges.packaging.toFixed(2)}</strong></div>`;
+            if (otherCharges.transport > 0) chargesHtml += `<div class="charge-row-ui"><span>Transport</span> <strong>₹${otherCharges.transport.toFixed(2)}</strong></div>`;
+            chargesListUI.innerHTML = chargesHtml;
+        } else {
+            chargesSummaryBox.style.display = 'none';
+        }
+
+        // Grand Totals Calculation
+        const pricePerKg = parseFloat(pricePerKgEl.value) || 0;
+        const priceWithGST = pricePerKg * 1.18;
+        const profileCost = totalWeight * priceWithGST;
+        const grandTotal = profileCost + hwTotalCost + totalOtherCharges;
+        totalWeightEl.innerText = `${totalWeight.toFixed(3)} kg`;
+        
+        // Show breakdown in the total box if hardware or charges exist
+        if (hwTotalCost > 0 || totalOtherCharges > 0) {
+            totalCostEl.innerHTML = `₹${grandTotal.toFixed(2)} <span style="display:block; font-size:0.8rem; font-weight: 500; color: var(--text-muted); margin-top: 4px;">(Series Products: ₹${profileCost.toFixed(0)} | H/W: ₹${hwTotalCost.toFixed(0)} | Other: ₹${totalOtherCharges.toFixed(0)})</span>`;
+        } else {
+            totalCostEl.innerHTML = `₹${grandTotal.toFixed(2)}`;
+        }
+
+    }
+
+    window.removeFromCart = function(index) {
+        cart.splice(index, 1);
+        renderCartAndTotals();
+        saveCartToLocalStorage();
+    }
+
+    function updateGSTPrice() {
+        const price = parseFloat(pricePerKgEl.value) || 0;
+        priceWithGSTEl.innerText = `₹${(price * 1.18).toFixed(2)}`;
+        renderCartAndTotals();
+    }
+
+    // --- EXPORTS & PRINT ---
+    function exportCSV() {
+        if (cart.length === 0) return alert('Cart is empty.');
+        let csv = 'Product Name,Die No,Size,Quantity,Weight per Piece (kg),Total Weight (kg)\n';
+        cart.forEach(it => { csv += `"${it.name}","${it.dieNo}","${it.length}",${it.qty},${it.weightPerPiece.toFixed(3)},${it.totalWeight.toFixed(3)}\n`; });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'Khidkie_Quote.csv'; a.click();
+    }
+
+    // --- SHARING & PDF LOGIC ---
+
+    function buildQuotePayload() {
+        const pricePerKg = parseFloat(pricePerKgEl.value) || 0;
+        const priceWithGST = pricePerKg * 1.18;
+
+        const totalWeight = cart.reduce((s, i) => s + (Number(i.totalWeight) || 0), 0);
+        const profileCost = totalWeight * priceWithGST;
+
+        let hwTotalCost = 0;
+        hwCart.forEach(it => hwTotalCost += ((Number(it.qty) || 0) * (Number(it.price) || 0) * 1.18));
+
+        const surfaceAmount = Number(otherCharges?.surfaceAmount || 0);
+        const packaging = Number(otherCharges?.packaging || 0);
+        const transport = Number(otherCharges?.transport || 0);
+        const totalOtherCharges = surfaceAmount + packaging + transport;
+
+        const grandTotal = profileCost + hwTotalCost + totalOtherCharges;
+
+        const clientName = document.getElementById('clientName')?.value?.trim() || '';
+        const quotationName = document.getElementById('quotationName')?.value?.trim() || '';
+
+        return {
+            clientName,
+            quotationName,
+            cart,
+            hwCart,
+            otherCharges,
+            totals: {
+                totalWeight: Number(totalWeight.toFixed(3)),
+                pricePerKg: Number(pricePerKg.toFixed(2)),
+                priceWithGST: Number(priceWithGST.toFixed(2)),
+                profileCost: Number(profileCost.toFixed(2)),
+                hwTotalCost: Number(hwTotalCost.toFixed(2)),
+                totalOtherCharges: Number(totalOtherCharges.toFixed(2)),
+                grandTotal: Number(grandTotal.toFixed(2)),
+            }
+        };
+    }
+
+    async function saveQuoteToServer() {
+        if (!validateRequiredQuotationFields()) return;
+        if (cart.length === 0 && hwCart.length === 0) return alert('Cart is empty.');
+        try {
+            const payload = buildQuotePayload();
+            const res = await fetch('/api/quotes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) return alert(data?.error || 'Failed to save quotation.');
+            
+            // Save locally
+            const savedQuotes = JSON.parse(localStorage.getItem('my_saved_quotes') || '[]');
+            savedQuotes.unshift({
+                id: data.id || Date.now().toString(),
+                quoteId: data.quoteId || '',
+                createdAt: new Date().toISOString(),
+                ...payload
+            });
+            localStorage.setItem('my_saved_quotes', JSON.stringify(savedQuotes));
+            if (typeof renderMyQuotes === 'function') renderMyQuotes();
+            
+            alert('Quotation saved successfully.');
+        } catch (e) {
+            alert('Failed to save quotation. Please try again.');
+        }
+    }
+
+    window.toggleQuoteDetails = function(index) {
+        const row = document.getElementById('quote-details-' + index);
+        if (row.style.display === 'none') {
+            row.style.display = 'table-row';
+        } else {
+            row.style.display = 'none';
+        }
+    };
+
+    window.editQuote = function(index) {
+        const savedQuotes = JSON.parse(localStorage.getItem('my_saved_quotes') || '[]');
+        const q = savedQuotes[index];
+        if (!q) return;
+        
+        cart = q.cart || [];
+        hwCart = q.hwCart || [];
+        otherCharges = q.otherCharges || { surfaceType: 'Powder Coating', surfaceAmount: 0, packaging: 0, transport: 0 };
+        document.getElementById('clientName').value = q.clientName || '';
+        document.getElementById('quotationName').value = q.quotationName || '';
+        if (q.totals && q.totals.pricePerKg) {
+            document.getElementById('pricePerKg').value = q.totals.pricePerKg;
+        }
+        
+        saveCartToLocalStorage();
+        if (typeof updateGSTPrice === 'function') {
+            updateGSTPrice();
+        } else {
+            renderCartAndTotals();
+        }
+        switchTab('calculator');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.deleteQuote = function(index) {
+        if (confirm('Are you sure you want to delete this quote?')) {
+            const savedQuotes = JSON.parse(localStorage.getItem('my_saved_quotes') || '[]');
+            savedQuotes.splice(index, 1);
+            localStorage.setItem('my_saved_quotes', JSON.stringify(savedQuotes));
+            renderMyQuotes();
+        }
+    };
+
+    function renderMyQuotes() {
+        const body = document.getElementById('myQuotesBody');
+        if (!body) return;
+        const savedQuotes = JSON.parse(localStorage.getItem('my_saved_quotes') || '[]');
+        if (savedQuotes.length === 0) {
+            body.innerHTML = '<tr><td colspan="6" class="muted" style="padding: 1rem; text-align: center;">No saved quotes found on this device.</td></tr>';
+            return;
+        }
+        let html = '';
+        savedQuotes.forEach((q, index) => {
+            const dateStr = new Date(q.createdAt).toLocaleString();
+            const quoteId = q.quoteId || q.id || '-';
+            let total = 0;
+            if (q.totals && q.totals.grandTotal) total = q.totals.grandTotal;
+            else if (q.grandTotal) total = q.grandTotal;
+
+            html += `<tr>
+                <td><strong>${quoteId}</strong></td>
+                <td>${dateStr}</td>
+                <td>${q.clientName || '-'}</td>
+                <td>${q.quotationName || '-'}</td>
+                <td style="text-align: right; font-weight: 600; color: #c01918;">₹${Number(total).toFixed(2)}</td>
+                <td style="text-align: center; white-space: nowrap;">
+                    <button class="btn-edit" onclick="toggleQuoteDetails(${index})" title="View Details" style="margin-right: 4px; background: #6c757d;"><i class="fas fa-eye"></i></button>
+                    <button class="btn-edit" onclick="editQuote(${index})" title="Edit Quote" style="margin-right: 4px;"><i class="fas fa-edit"></i></button>
+                    <button class="btn-remove" onclick="deleteQuote(${index})" title="Delete Quote"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`;
+
+            let detailsHtml = '<div style="padding: 10px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px;">';
+            if (q.cart && q.cart.length > 0) {
+                detailsHtml += `
+                    <table class="cart-table" style="background: white; margin-bottom: 10px; font-size: 0.9em;">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Size</th>
+                                <th>Qty</th>
+                                <th>Wt/pc</th>
+                                <th>Total Wt.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                q.cart.forEach(item => {
+                    detailsHtml += `
+                        <tr>
+                            <td>${item.name} <small>(${item.dieNo})</small></td>
+                            <td>${item.length}</td>
+                            <td>${item.qty}</td>
+                            <td>${item.weightPerPiece}</td>
+                            <td>${item.totalWeight}</td>
+                        </tr>
+                    `;
+                });
+                detailsHtml += `</tbody></table>`;
+            } else {
+                detailsHtml += `<p style="margin-bottom: 10px;">No profiles in this quote.</p>`;
+            }
+            detailsHtml += '</div>';
+            
+            html += `<tr id="quote-details-${index}" style="display: none;"><td colspan="6" style="padding: 0;">${detailsHtml}</td></tr>`;
+        });
+        body.innerHTML = html;
+    }
+
+    function getShareText() {
+        // Allow sharing if there's either profiles OR hardware in the cart
+        if (cart.length === 0 && hwCart.length === 0) return null; 
+        
+        const pricePerKg = parseFloat(pricePerKgEl.value) || 0;
+        const priceWithGST = (pricePerKg * 1.18).toFixed(2);
+        
+        // 1. Calculate Profiles Total
+        const totalWeight = cart.reduce((s, i) => s + i.totalWeight, 0);
+        const profileCost = totalWeight * parseFloat(priceWithGST);
+        
+        // 2. Calculate Hardware Total
+        let hwTotalCost = 0;
+        hwCart.forEach(it => hwTotalCost += (it.qty * it.price * 1.18));
+        
+        // 3. Calculate Other Charges Total
+        const totalOtherCharges = otherCharges.surfaceAmount + otherCharges.packaging + otherCharges.transport;
+        
+        // 4. Calculate Grand Total
+        const grandTotal = (profileCost + hwTotalCost + totalOtherCharges).toFixed(2);
+
+        // Fetch inputs
+        const clientName = document.getElementById('clientName').value.trim() || 'Valued Client';
+        const projName = document.getElementById('quotationName').value.trim() || 'Aluminium Systems';
+
+        // 5. Build the text string sequentially
+        let text = `*Quotation Summary*\n`;
+        text += `Date: ${new Date().toLocaleDateString()}\n`;
+        text += `Prepared for: *${clientName}*\n`;
+        if (projName !== 'Aluminium Systems') text += `Project: ${projName}\n`;
+        text += `--------------------------\n`;
+        
+        // Add Profiles to text
+        if (cart.length > 0) {
+            text += `*Series Products:*\n`;
+            cart.forEach((it, idx) => {
+                text += `${idx + 1}. ${it.name} (${it.dieNo})\n`;
+                text += `   Qty: ${it.qty} | L: ${it.length} | Wt.: ${it.totalWeight.toFixed(3)}kg\n`;
+            });
+            text += `\n`;
+        }
+
+        // Add Hardware to text
+        if (hwCart.length > 0) {
+            text += `*Hardware & Accessories:*\n`;
+            hwCart.forEach((it, idx) => {
+                const lineTotal = (it.qty * it.price * 1.18).toFixed(2);
+                text += `${idx + 1}. ${it.name}\n`;
+                text += `   Qty: ${it.qty} | Total: ₹${lineTotal}\n`;
+            });
+            text += `\n`;
+        }
+        
+        // Add Other Charges to text
+        if (totalOtherCharges > 0) {
+            text += `*Other Charges:*\n`;
+            if (otherCharges.surfaceAmount > 0) text += `- Surface Finishing (${otherCharges.surfaceType}): ₹${otherCharges.surfaceAmount}\n`;
+            if (otherCharges.packaging > 0) text += `- Packaging: ₹${otherCharges.packaging}\n`;
+            if (otherCharges.transport > 0) text += `- Transport: ₹${otherCharges.transport}\n`;
+            text += `\n`;
+        }
+
+        text += `--------------------------\n`;
+        text += `Total Weight: ${totalWeight.toFixed(3)} kg\n`;
+        text += `Base Price: ₹${pricePerKg.toFixed(2)}/kg\n`;
+        text += `Rate (Incl. 18% GST): ₹${priceWithGST}/kg\n`;
+        text += `*Grand Total (Incl. GST): ₹${grandTotal}*\n`;
+        text += `(Series Products: ₹${profileCost.toFixed(0)} | H/W: ₹${hwTotalCost.toFixed(0)} | Other: ₹${totalOtherCharges.toFixed(0)})\n\n`;
+        
+        text += `● This is a quotation only, not the final bill.\n● Final payment is based on actual billed amount.\n● Rates applicable as per dispatch date.\n● Final price and weight may vary.\n\n`;
+        text += `Generated via Khidkie™ Instant Quotation`;
+        
+        return encodeURIComponent(text);
+    }
+
+    function shareWhatsApp() {
+        if (!validateRequiredQuotationFields()) return;
+        const text = getShareText();
+        if (!text) return alert("Cart is empty!");
+        window.open(`https://wa.me/?text=${text}`, '_blank');
+    }
+
+    function shareEmail() {
+        if (!validateRequiredQuotationFields()) return;
+        const text = getShareText();
+        if (!text) return alert("Cart is empty!");
+        const subject = encodeURIComponent("Quotation");
+        window.location.href = `mailto:?subject=${subject}&body=${text}`;
+    }
+
+    // THE HTML TEMPLATE FOR BOTH PRINT AND PDF (Keeps your exact CSS intact)
+    function getQuotationHTML() {
+        const pricePerKg = parseFloat(pricePerKgEl.value) || 0;
+        const priceWithGST = (pricePerKg * 1.18).toFixed(2);
+
+        const totalWeight = cart.reduce((s, i) => s + i.totalWeight, 0);
+        const profileCost = totalWeight * priceWithGST;
+
+        const totalCost = (totalWeight * parseFloat(priceWithGST)).toFixed(2);
+
+        let hwTotalCost = 0;
+        hwCart.forEach(it => hwTotalCost += (it.qty * it.price * 1.18));
+        
+       const totalOtherCharges = otherCharges.surfaceAmount + otherCharges.packaging + otherCharges.transport;
+       const grandTotal = (profileCost + hwTotalCost + totalOtherCharges).toFixed(2);
+
+        // Fetch new inputs
+        const clientName = document.getElementById('clientName').value.trim() || 'Valued Client';
+        const quotationName = document.getElementById('quotationName').value.trim();
+        const projectDisplay = quotationName ? `<div style="font-size: 13px; color: #c01918; margin-top: 4px; font-weight: 600;">Project: ${quotationName}</div>` : '';
+
+
+       let profileRowsHtml = '';
+        cart.forEach(it => {
+            profileRowsHtml += `
+                <tr>
+                    <td>${it.name}</td>
+                    <td>${it.dieNo}</td>
+                    <td>${it.length}</td>
+                    <td>${it.qty}</td>
+                    <td>${it.weightPerPiece.toFixed(3)}</td>
+                    <td>${it.totalWeight.toFixed(3)}</td>
+                </tr>
+            `;
+        });
+
+        // Generate Hardware HTML Section dynamically
+        let hardwareHtmlSection = '';
+        if (hwCart.length > 0) {
+            let hwRowsHtml = '';
+            hwCart.forEach(it => {
+                const lineTotal = it.qty * it.price * 1.18;
+                hwRowsHtml += `
+                    <tr>
+                        <td colspan="2">${it.name}</td>
+                        <td>-</td>
+                        <td>${it.qty} Pcs</td>
+                        <td>₹${it.price.toFixed(2)}</td>
+                        <td>₹${lineTotal.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            hardwareHtmlSection = `
+                <div class="section-title">Hardware & Accessories</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th colspan="2">Item Description</th>
+                            <th>Size</th>
+                            <th>Qty (Pcs)</th>
+                            <th>Rate / Pc (Ex. GST)</th>
+                            <th>Total (Incl. GST)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${hwRowsHtml}
+                    </tbody>
+                </table>
+            `;
+        }
+
+
+        return `
+            <div class="quote-page" style="background: #ffffff; font-family: 'Montserrat', sans-serif; color: #1d2762; font-size: 13px;">
+                <style>
+                    /* CSS FOR LONG TABLES TO PREVENT BREAKING ACROSS PAGES */
+                   * { box-sizing: border-box; }
+                    tr { page-break-inside: avoid !important; page-break-after: auto; }
+                    thead { display: table-header-group; }
+                    tbody { display: table-row-group; }
+                    .meta-row, .totals-block, .footer-note, .quote-header, h5, .client-block, .section-title { page-break-inside: avoid !important; }
+                    
+                    /* YOUR EXACT CSS */
+                    .quote-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid rgba(0, 0, 0, 0.06); padding-bottom: 14px; margin-bottom: 18px; }
+                    .brand-block { max-width: 60%; }
+                    .brand-name { font-family: 'Raleway', sans-serif; font-size: 24px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #1d2762; margin-bottom: 4px; }
+                    .brand-logo {height: 100px; /* adjust as needed (18px–24px works well) */ width: auto; vertical-align: middle;}
+                    .brand-highlight { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: #c01918; }
+                    .brand-tagline { margin-top: 8px; font-size: 11px; line-height: 1.5; color: #6c757d; }
+                    .quote-title-block { text-align: right; }
+                    .quote-pill { display: inline-block; padding: 6px 14px; border-radius: 999px; border: 1px solid rgba(192, 25, 24, 0.25); color: #c01918; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; }
+                    .quote-title { font-family: 'Raleway', sans-serif; font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: #1d2762; margin-bottom: 4px; }
+                    .quote-subtitle { font-size: 11px; color: #6c757d; }
+                    .meta-row { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 18px; }
+                    .meta-card { flex: 1 1 180px; padding: 10px 12px; border-radius: 10px; background: linear-gradient(135deg, #f9fafc, #f3f6ff); border: 1px solid #e2e6f0; }
+                    .meta-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: #6c757d; margin-bottom: 4px; font-weight: 600; }
+                    .meta-value { font-size: 12px; font-weight: 600; color: #1d2762; }
+                    
+                    .section-title { margin-top: 24px; margin-bottom: 8px; font-weight: 700; color: #1d2762; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid #e2e6f0; padding-bottom: 4px; }
+                    
+                    table { width: 100%; border-collapse: collapse; margin-top: 6px; border-radius: 10px; overflow: hidden; font-size: 11.5px; }
+                    thead th { background: linear-gradient(135deg, #1d2762, #111734); color: #ffffff; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; padding: 9px 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.12); text-align: left; }
+                    tbody td { padding: 8px 8px; border-bottom: 1px solid #edf0f7; color: #333; }
+                    tbody tr:nth-child(odd) { background: #fafbff; }
+                    th:first-child, td:first-child { padding-left: 10px; }
+                    th:last-child, td:last-child { padding-right: 10px; }
+                    .totals-block { margin-top: 16px; padding-top: 14px; display: flex; justify-content: flex-end; gap: 18px; border-top: 2px solid rgba(29, 39, 98, 0.12); }
+                    .totals-group { text-align: right; }
+                    .totals-row { font-size: 12px; margin-bottom: 4px; font-weight: 600; color: #444; }
+                    .totals-row span.value { min-width: 80px; display: inline-block; }
+                    .grand-total-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: #6c757d; }
+                    .grand-total { margin-top: 4px; font-size: 18px; font-weight: 800; color: #c01918; }
+                    .footer-note { margin-top: 22px; padding-top: 12px; border-top: 1px dashed #dde0ee; font-size: 10px; color: #6c757d; display: flex; justify-content: space-between; gap: 10px; }
+                    .footer-note strong { color: #1d2762; }
+                </style>
+
+                <div class="quote-header">
+                    <div class="brand-block">
+                        <div class="brand-name">
+                    <img src="assets/images/khidkie_logo_small.png" alt="Khidkie Logo" class="brand-logo" onerror="this.onerror=null;this.src='assets/images/khidkie%20main%20logo%20trans.png';">
+                    </div>
+                        <div class="brand-highlight">Marketed by Shreenathji Aluminium</div>
+                        <div class="brand-tagline">Khidkie™ | India's Trusted Engineered Aluminium Systems | Precision Sections | Architecture & Fenestration | Performance Hardware. </div>
+                    </div>
+                    <div class="quote-title-block">
+                    <br><br>
+                        <div class="quote-pill">Official Quotation</div><br><br>
+                        <div class="quote-subtitle">Detailed weight & pricing summary. </div>
+                    </div>
+                </div>
+
+                <div class="client-block" style="margin-bottom: 18px; padding: 14px 18px; background: #fafbff; border-left: 4px solid #c01918; border-radius: 6px; border: 1px solid #edf0f7;">
+                    <div style="font-size: 10px; text-transform: uppercase; color: #6c757d; letter-spacing: 0.14em; margin-bottom: 4px; font-weight: 600;">Prepared For</div>
+                    <div style="font-size: 18px; font-weight: 800; color: #1d2762; font-family: 'Raleway', sans-serif; letter-spacing: 0.03em;">${clientName}</div>
+                    ${projectDisplay}
+                </div>
+
+                <div class="meta-row">
+                    <div class="meta-card">
+                        <div class="meta-label">Date</div>
+                        <div class="meta-value">${new Date().toLocaleString('en-IN', {day: '2-digit',month: 'short',year: 'numeric',hour: '2-digit',minute: '2-digit',hour12: true})}</div>
+                    </div>
+                    <div class="meta-card">
+                        <div class="meta-label">Base Price / Kg</div>
+                        <div class="meta-value">₹${pricePerKg.toFixed(2)}</div>
+                    </div>
+                    <div class="meta-card">
+                        <div class="meta-label">Price / Kg (Incl. 18% GST)</div>
+                        <div class="meta-value">₹${priceWithGST}</div>
+                    </div>
+                </div>
+
+
+                <div class="section-title">Series Products</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Die No.</th>
+                            <th>Size</th>
+                            <th>Qty (Pcs)</th>
+                            <th>Weight / Pc (kg)</th>
+                            <th>Total Weight (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${profileRowsHtml || '<tr><td colspan="6" style="text-align:center;">No profiles added.</td></tr>'}
+                    </tbody>
+                </table>
+
+                ${hardwareHtmlSection}
+
+                <div class="totals-block">
+                    <div class="totals-group">
+                        <div class="totals-row">Total Weight: <span class="value">${totalWeight.toFixed(3)} kg</span></div>
+                        <div class="totals-row" style="color: #6c757d; font-size: 10px; margin-bottom: 8px;">(Series Products: ₹${profileCost.toFixed(0)} | H/W: ₹${hwTotalCost.toFixed(0)} | Other: ₹${totalOtherCharges.toFixed(0)})</div>
+                        <div class="grand-total-label">Grand Total (Incl. GST)</div>
+                        <div class="grand-total">₹${grandTotal}</div>
+                    </div>
+                </div>
+
+                ${totalOtherCharges > 0 ? `
+                <div class="section-title">Other Charges</div>
+                <table>
+                    <tbody>
+                        ${otherCharges.surfaceAmount > 0 ? `<tr><td style="width: 70%;">Surface Finishing (${otherCharges.surfaceType})</td><td style="text-align: right; font-weight: 600;">₹${otherCharges.surfaceAmount.toFixed(2)}</td></tr>` : ''}
+                        ${otherCharges.packaging > 0 ? `<tr><td style="width: 70%;">Packaging Charges</td><td style="text-align: right; font-weight: 600;">₹${otherCharges.packaging.toFixed(2)}</td></tr>` : ''}
+                        ${otherCharges.transport > 0 ? `<tr><td style="width: 70%;">Transportation Charges</td><td style="text-align: right; font-weight: 600;">₹${otherCharges.transport.toFixed(2)}</td></tr>` : ''}
+                    </tbody>
+                </table>
+                ` : ''}
+
+              
+                
+                <h5>   Note:<br>
+                ● Kindly note that this is a quotation only and not the final bill of materials.<br>
+                ● The final payment will be based on the actual billed amount.<br>
+                ● Rates will be applicable as per the dispatch date.<br>
+                ● Final price and weight may vary.
+                </h5>
+
+                <div class="footer-note">
+                    <div>
+                        <strong>Khidkie™</strong> | Engineered aluminium systems. <br>
+                        This quotation is system-generated and based on current weight & price inputs.
+                    </div>
+                    <div style="text-align: right;">
+                        For any clarifications:<br>
+                        Email: info@khidkie.com<br>
+                        Phone: +91-81281 10105
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function printQuotation() {
+        if (!validateRequiredQuotationFields()) return;
+        if (cart.length === 0) return alert('Cart is empty.');
+
+        const printWindow = window.open('', '_blank');
+        let html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Khidkie™ | Quotation</title>
+                <style>
+                    body { margin: 0; padding: 20px; background: #fff; }
+                    .print-hint { margin-top: 10px; font-size: 10px; color: #999; font-family: sans-serif; text-align: center; }
+                    @media print { .no-print { display: none !important; } }
+                </style>
+            </head>
+            <body>
+                ${getQuotationHTML()}
+                <p class="print-hint no-print">
+                    Tip: Use <strong>Ctrl + P</strong> (Windows) or <strong>Cmd + P</strong> (Mac) to save this Khidkie™ quotation as a PDF or print it.
+                </p>
+            </body>
+            </html>
+        `;
+
+        printWindow.document.write(html);
+        printWindow.document.close();
+        setTimeout(() => {
+            printWindow.focus();
+            printWindow.print();
+        }, 250);
+    }
+
+    
+    </script>
+</body>
+</html>
+
+

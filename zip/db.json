@@ -1,0 +1,230 @@
+{
+  "jobs": [],
+  "applications": [],
+  "products": [
+    {
+      "_id": "a67cc8526e66f6d01e2c3025",
+      "name": "R50",
+      "price": 0,
+      "size": "15",
+      "weight": 1.1,
+      "die": "102",
+      "series": "202",
+      "enabled": true,
+      "createdAt": "2026-05-30T06:00:51.352Z"
+    },
+    {
+      "_id": "fa71ef345d06a4235325372a",
+      "name": "test",
+      "price": 0,
+      "size": "10 ft",
+      "weight": 1.1,
+      "die": "101",
+      "series": "101",
+      "enabled": true,
+      "createdAt": "2026-05-30T06:33:53.421Z"
+    },
+    {
+      "_id": "62c5e7cac9ba50c757b52572",
+      "name": "test",
+      "price": 0,
+      "size": "12 ft",
+      "weight": 2.2,
+      "die": "101",
+      "series": "101",
+      "enabled": true,
+      "createdAt": "2026-05-30T06:33:53.428Z"
+    }
+  ],
+  "quotes": [
+    {
+      "_id": "aef82607be049cdbeaf35242",
+      "clientName": "test",
+      "quotationName": "testing",
+      "cart": [
+        {
+          "cartItemId": "S26G_002_16ft_2.8",
+          "name": "26mm 2T Vertical Gulf",
+          "dieNo": "S26G 002",
+          "length": "16ft",
+          "qty": 1,
+          "weightPerPiece": 2.8,
+          "totalWeight": 2.8
+        },
+        {
+          "cartItemId": "S26G_003_16ft_4.7",
+          "name": "26mm 2T Bottom (U) Gulf",
+          "dieNo": "S26G 003",
+          "length": "16ft",
+          "qty": 1,
+          "weightPerPiece": 4.7,
+          "totalWeight": 4.7
+        }
+      ],
+      "hwCart": [],
+      "otherCharges": {
+        "surfaceType": "Powder Coating",
+        "surfaceAmount": 0,
+        "packaging": 0,
+        "transport": 0
+      },
+      "totals": {
+        "totalWeight": 7.5,
+        "pricePerKg": 450,
+        "priceWithGST": 531,
+        "profileCost": 3982.5,
+        "hwTotalCost": 0,
+        "totalOtherCharges": 0,
+        "grandTotal": 3982.5
+      },
+      "meta": {
+        "ip": "::ffff:127.0.0.1",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0",
+        "referrer": "http://localhost:5000/quotation-calculator.html"
+      },
+      "createdAt": "2026-05-29T12:14:46.395Z"
+    },
+    {
+      "_id": "28e7b6d618a0c29af41bfb85",
+      "clientName": "testing",
+      "quotationName": "testing",
+      "cart": [
+        {
+          "cartItemId": "S26G_002_16ft_2.8",
+          "name": "26mm 2T Vertical Gulf",
+          "dieNo": "S26G 002",
+          "length": "16ft",
+          "qty": 2,
+          "weightPerPiece": 2.8,
+          "totalWeight": 5.6
+        },
+        {
+          "cartItemId": "SRE_001_15ft_1.25",
+          "name": "3/4 Single Track Top",
+          "dieNo": "SRE 001",
+          "length": "15ft",
+          "qty": 1,
+          "weightPerPiece": 1.25,
+          "totalWeight": 1.25
+        }
+      ],
+      "hwCart": [],
+      "otherCharges": {
+        "surfaceType": "Powder Coating",
+        "surfaceAmount": 0,
+        "packaging": 0,
+        "transport": 0
+      },
+      "totals": {
+        "totalWeight": 6.85,
+        "pricePerKg": 450,
+        "priceWithGST": 531,
+        "profileCost": 3637.35,
+        "hwTotalCost": 0,
+        "totalOtherCharges": 0,
+        "grandTotal": 3637.35
+      },
+      "meta": {
+        "ip": "::1",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+        "referrer": "http://localhost:5000/quotation-calculator.html"
+      },
+      "createdAt": "2026-05-30T05:49:40.548Z"
+    },
+    {
+      "_id": "1e25d0d41f8d10f66414d35a",
+      "clientName": "test",
+      "quotationName": "test",
+      "cart": [
+        {
+          "cartItemId": "S26G_002_16ft_2.8",
+          "name": "26mm 2T Vertical Gulf",
+          "dieNo": "S26G 002",
+          "length": "16ft",
+          "qty": 2,
+          "weightPerPiece": 2.8,
+          "totalWeight": 5.6
+        },
+        {
+          "cartItemId": "SRE_001_15ft_1.25",
+          "name": "3/4 Single Track Top",
+          "dieNo": "SRE 001",
+          "length": "15ft",
+          "qty": 1,
+          "weightPerPiece": 1.25,
+          "totalWeight": 1.25
+        },
+        {
+          "cartItemId": "6980e9e5f89e7deb3e0a1cbb_8ft_1.2",
+          "name": "test",
+          "dieNo": "101",
+          "length": "8ft",
+          "qty": 1,
+          "weightPerPiece": 1.2,
+          "totalWeight": 1.2
+        }
+      ],
+      "hwCart": [],
+      "otherCharges": {
+        "surfaceType": "Powder Coating",
+        "surfaceAmount": 0,
+        "packaging": 0,
+        "transport": 0
+      },
+      "totals": {
+        "totalWeight": 8.05,
+        "pricePerKg": 449.99,
+        "priceWithGST": 530.99,
+        "profileCost": 4274.46,
+        "hwTotalCost": 0,
+        "totalOtherCharges": 0,
+        "grandTotal": 4274.46
+      },
+      "meta": {
+        "ip": "::1",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+        "referrer": "http://localhost:5000/quotation-calculator.html"
+      },
+      "createdAt": "2026-05-30T06:30:19.981Z"
+    },
+    {
+      "_id": "ba7d862a67a2a93fc8f95fb2",
+      "clientName": "test",
+      "quotationName": "test",
+      "cart": [
+        {
+          "cartItemId": "S26G_002_16ft_2.8",
+          "name": "26mm 2T Vertical Gulf",
+          "dieNo": "S26G 002",
+          "length": "16ft",
+          "qty": 2,
+          "weightPerPiece": 2.8,
+          "totalWeight": 5.6
+        }
+      ],
+      "hwCart": [],
+      "otherCharges": {
+        "surfaceType": "Powder Coating",
+        "surfaceAmount": 0,
+        "packaging": 0,
+        "transport": 0
+      },
+      "totals": {
+        "totalWeight": 5.6,
+        "pricePerKg": 449.98,
+        "priceWithGST": 530.98,
+        "profileCost": 2973.47,
+        "hwTotalCost": 0,
+        "totalOtherCharges": 0,
+        "grandTotal": 2973.47
+      },
+      "meta": {
+        "ip": "::1",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+        "referrer": "http://localhost:5000/quotation-calculator.html"
+      },
+      "createdAt": "2026-05-30T06:55:32.550Z"
+    }
+  ],
+  "hardware": []
+}

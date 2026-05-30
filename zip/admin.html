@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Panel</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: #121a33;
+      --muted: #aab3d1;
+      --text: #e9ecff;
+      --border: rgba(255, 255, 255, .12);
+      --accent: #6ea8ff;
+      --bad: #ff6b6b;
+      --good: #3ddc97;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1200px 800px at 20% 10%, #1a2a66 0%, transparent 60%), var(--bg);
+      color: var(--text);
+    }
+
+    a {
+      color: var(--accent);
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      margin: 0;
+      letter-spacing: .2px;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: rgba(18, 26, 51, .92);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .35);
+    }
+
+    .card h2 {
+      font-size: 14px;
+      margin: 0 0 10px;
+      color: #dfe6ff;
+      letter-spacing: .3px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input,
+    button,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .06);
+      color: var(--text);
+      outline: none;
+    }
+
+    input::placeholder {
+      color: rgba(233, 236, 255, .55);
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .row>* {
+      flex: 1;
+    }
+
+    .btn {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .08);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      background: linear-gradient(180deg, rgba(110, 168, 255, .35), rgba(110, 168, 255, .12));
+      border-color: rgba(110, 168, 255, .45);
+    }
+
+    .btn.danger {
+      background: linear-gradient(180deg, rgba(255, 107, 107, .25), rgba(255, 107, 107, .08));
+      border-color: rgba(255, 107, 107, .35);
+    }
+
+    .btn.good {
+      background: linear-gradient(180deg, rgba(61, 220, 151, .25), rgba(61, 220, 151, .08));
+      border-color: rgba(61, 220, 151, .35);
+    }
+
+    .btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .06);
+    }
+
+    .pill.ok {
+      color: #bff6da;
+      border-color: rgba(61, 220, 151, .35);
+    }
+
+    .pill.bad {
+      color: #ffd2d2;
+      border-color: rgba(255, 107, 107, .35);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      padding: 10px 8px;
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    th {
+      text-align: left;
+      color: #dfe6ff;
+      font-weight: 650;
+      font-size: 12px;
+      letter-spacing: .2px;
+    }
+
+    .k {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    .nowrap {
+      white-space: nowrap;
+    }
+
+    .split {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(18, 26, 51, .96);
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      border-radius: 12px;
+      color: var(--text);
+      min-width: 260px;
+      max-width: 92vw;
+      box-shadow: 0 18px 60px rgba(0, 0, 0, .45);
+      display: none;
+    }
+
+    .toast strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+
+    .toast .muted {
+      font-size: 12px;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid var(--border);
+      padding: 10px;
+      border-radius: 12px;
+      margin: 10px 0 0;
+      max-height: 320px;
+      overflow: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <h1>Admin Panel</h1>
+        <span>Products + Quotations</span>
+      </div>
+      <div class="row" style="max-width: 420px;">
+        <span id="authState" class="pill bad">Not logged in</span>
+        <button id="logoutBtn" class="btn" type="button" disabled>Logout</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card" id="loginCard">
+        <h2>Admin Login</h2>
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Enter ADMIN_PASSWORD" />
+        <div style="height: 10px;"></div>
+        <button id="loginBtn" class="btn primary" type="button">Login</button>
+        <div style="height: 8px;"></div>
+        <div class="muted">Backend: `POST /api/admin/login`</div>
+      </div>
+
+      <div class="card" id="productsCard" style="grid-column: 1 / -1; display:none;">
+        <div class="split">
+          <h2 style="margin:0;">Products</h2>
+          <button id="refreshProductsBtn" class="btn" type="button" disabled>Refresh</button>
+        </div>
+
+        <div style="height: 10px;"></div>
+        <div class="row">
+          <div>
+            <label for="pname">Product name</label>
+            <input id="pname" placeholder="e.g. Domal Sliding Track" />
+          </div>
+        </div>
+        <div style="height: 10px;"></div>
+        <div class="row">
+          <div>
+            <label for="psize">Size</label>
+            <input id="psize" placeholder="e.g. 8 ft, 10 ft, 12 ft" />
+          </div>
+          <div>
+            <label for="pweight">Weight (kg)</label>
+            <input id="pweight" placeholder="e.g. 0.450, 0.520, 0.610" />
+          </div>
+          <div>
+            <label for="pdie">Die No</label>
+            <input id="pdie" placeholder="e.g. D123" />
+          </div>
+          <div>
+            <label for="pseries">Series</label>
+            <input id="pseries" placeholder="e.g. 25 Series" />
+          </div>
+        </div>
+        <div style="height: 10px;"></div>
+        <div class="row">
+          <button id="addProductBtn" class="btn good" type="button" disabled>Add product</button>
+          <span class="muted">Use format: `8 ft:0.450,0.520; 10 ft:0.610` for size-wise weights</span>
+        </div>
+
+        <div style="height: 14px;"></div>
+        <div style="overflow-x: auto;">
+          <table style="min-width: 600px;">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Series</th>
+                <th>Die</th>
+                <th>Size</th>
+                <th class="right">Wt(kg)</th>
+                <th class="nowrap">Status</th>
+                <th class="right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="productsTbody">
+              <tr>
+                <td colspan="7" class="muted">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" id="hardwareCard" style="grid-column: 1 / -1; display:none;">
+        <div class="split">
+          <h2 style="margin:0;">Hardware & Accessories</h2>
+          <button id="refreshHardwareBtn" class="btn" type="button" disabled>Refresh</button>
+        </div>
+
+        <div style="height: 10px;"></div>
+        <div class="row">
+          <div>
+            <label for="hname">Item name / Description</label>
+            <input id="hname" placeholder="e.g. Premium Handle" />
+          </div>
+          <div>
+            <label for="hrate">Rate/Pc (â‚¹)</label>
+            <input id="hrate" type="number" placeholder="0" />
+          </div>
+          <div style="flex: 0.5;">
+            <label>&nbsp;</label>
+            <button id="addHardwareBtn" class="btn good" type="button" disabled style="width: 100%;">Add</button>
+          </div>
+        </div>
+
+        <div style="height: 14px;"></div>
+        <div style="overflow-x: auto;">
+          <table style="min-width: 600px;">
+            <thead>
+              <tr>
+                <th>Name / Description</th>
+                <th class="right">Rate/Pc (â‚¹)</th>
+                <th class="nowrap">Status</th>
+                <th class="right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="hardwareTbody">
+              <tr>
+                <td colspan="4" class="muted">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      <div class="card" id="quotesCard" style="grid-column: 1 / -1; display:none;">
+        <div class="split">
+          <h2 style="margin:0;">User Quotations</h2>
+          <div class="row" style="max-width: 520px;">
+            <input id="quotesLimit" type="number" min="1" max="200" value="50" />
+            <button id="refreshQuotesBtn" class="btn" type="button" disabled>Refresh</button>
+          </div>
+        </div>
+        <div style="height: 10px;"></div>
+        <table>
+          <thead>
+            <tr>
+              <th>Quote ID</th>
+              <th>Created</th>
+              <th>Client</th>
+              <th>Project</th>
+              <th class="right">Grand Total</th>
+              <th class="right">Details</th>
+            </tr>
+          </thead>
+          <tbody id="quotesTbody">
+            <tr>
+              <td colspan="6" class="muted">Login to load quotations.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div id="quoteDetails" style="display:none; margin-top: 14px;">
+          <div class="split">
+            <div>
+              <div class="k">Selected quote</div>
+              <div id="quoteTitle" style="font-weight: 650;"></div>
+            </div>
+            <button id="closeDetailsBtn" class="btn" type="button">Close</button>
+          </div>
+          <div id="quoteDetailsContent" style="margin-top: 14px; overflow-x: auto;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">
+    <strong id="toastTitle">Done</strong>
+    <div id="toastBody" class="muted"></div>
+  </div>
+
+  <script>
+    const els = {
+      loginCard: document.getElementById('loginCard'),
+      productsCard: document.getElementById('productsCard'),
+      quotesCard: document.getElementById('quotesCard'),
+      authState: document.getElementById('authState'),
+      logoutBtn: document.getElementById('logoutBtn'),
+      password: document.getElementById('password'),
+      loginBtn: document.getElementById('loginBtn'),
+      refreshProductsBtn: document.getElementById('refreshProductsBtn'),
+      addProductBtn: document.getElementById('addProductBtn'),
+      pname: document.getElementById('pname'),
+      psize: document.getElementById('psize'),
+      pweight: document.getElementById('pweight'),
+      pdie: document.getElementById('pdie'),
+      pseries: document.getElementById('pseries'),
+      productsTbody: document.getElementById('productsTbody'),
+      hardwareCard: document.getElementById('hardwareCard'),
+      refreshHardwareBtn: document.getElementById('refreshHardwareBtn'),
+      addHardwareBtn: document.getElementById('addHardwareBtn'),
+      hname: document.getElementById('hname'),
+      hrate: document.getElementById('hrate'),
+      hardwareTbody: document.getElementById('hardwareTbody'),
+      quotesLimit: document.getElementById('quotesLimit'),
+      refreshQuotesBtn: document.getElementById('refreshQuotesBtn'),
+      quotesTbody: document.getElementById('quotesTbody'),
+      quoteDetails: document.getElementById('quoteDetails'),
+      quoteTitle: document.getElementById('quoteTitle'),
+      quoteDetailsContent: document.getElementById('quoteDetailsContent'),
+      closeDetailsBtn: document.getElementById('closeDetailsBtn'),
+      toast: document.getElementById('toast'),
+      toastTitle: document.getElementById('toastTitle'),
+      toastBody: document.getElementById('toastBody'),
+    };
+
+    function toast(title, body) {
+      els.toastTitle.textContent = title;
+      els.toastBody.textContent = body || '';
+      els.toast.style.display = 'block';
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => els.toast.style.display = 'none', 2600);
+    }
+
+    function getToken() { return localStorage.getItem('admin_token') || ''; }
+    function setToken(t) { localStorage.setItem('admin_token', t); renderAuth(); }
+    function clearToken() { localStorage.removeItem('admin_token'); renderAuth(); }
+
+    function renderAuth() {
+      const ok = !!getToken();
+      els.authState.textContent = ok ? 'Logged in' : 'Not logged in';
+      els.authState.className = ok ? 'pill ok' : 'pill bad';
+      els.logoutBtn.disabled = !ok;
+      els.refreshProductsBtn.disabled = !ok;
+      els.addProductBtn.disabled = !ok;
+      els.refreshHardwareBtn.disabled = !ok;
+      els.addHardwareBtn.disabled = !ok;
+      els.refreshQuotesBtn.disabled = !ok;
+
+      if (ok) {
+        els.loginCard.style.display = 'none';
+        els.productsCard.style.display = 'block';
+        els.hardwareCard.style.display = 'block';
+        els.quotesCard.style.display = 'block';
+      } else {
+        els.loginCard.style.display = 'block';
+        els.productsCard.style.display = 'none';
+        els.hardwareCard.style.display = 'none';
+        els.quotesCard.style.display = 'none';
+      }
+    }
+
+    async function api(path, opts = {}) {
+      const headers = Object.assign({ 'Content-Type': 'application/json' }, opts.headers || {});
+      const token = getToken();
+      if (token) headers.Authorization = `Bearer ${token}`;
+      const res = await fetch(path, { ...opts, headers });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const msg = data?.error || `Request failed (${res.status})`;
+        throw new Error(msg);
+      }
+      return data;
+    }
+
+    async function login() {
+      const password = els.password.value;
+      const data = await api('/api/admin/login', { method: 'POST', body: JSON.stringify({ password }), headers: { Authorization: '' } });
+      setToken(data.token);
+      toast('Logged in', 'Admin token stored in this browser.');
+      await refreshProducts();
+      await refreshHardware();
+      await refreshQuotes();
+    }
+
+    async function refreshProducts() {
+      els.productsTbody.innerHTML = `<tr><td colspan="7" class="muted">Loading...</td></tr>`;
+      const items = await api('/api/admin/products');
+      if (!items.length) {
+        els.productsTbody.innerHTML = `<tr><td colspan="7" class="muted">No products yet.</td></tr>`;
+        return;
+      }
+      els.productsTbody.innerHTML = items.map(p => {
+        const status = p.enabled ? `<span class="pill ok">Enabled</span>` : `<span class="pill bad">Disabled</span>`;
+        const btn = p.enabled
+          ? `<button class="btn danger" data-action="toggle" data-id="${p._id}" data-enabled="false">Disable</button>`
+          : `<button class="btn good" data-action="toggle" data-id="${p._id}" data-enabled="true">Enable</button>`;
+        return `
+          <tr>
+            <td>${escapeHtml(p.name)}</td>
+            <td>${escapeHtml(p.series || '-')}</td>
+            <td>${escapeHtml(p.die || '-')}</td>
+            <td>${escapeHtml(p.size || '-')}</td>
+            <td class="right">${Number(p.weight || 0).toFixed(3)}</td>
+            <td class="nowrap">${status}</td>
+            <td class="right nowrap">
+              ${btn}
+              <button class="btn danger" data-action="delete-product" data-id="${p._id}" style="margin-left:4px;">Delete</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function addProduct() {
+      const name = els.pname.value.trim();
+      const sizeRaw = els.psize.value.trim();
+      const weightRaw = els.pweight.value.trim();
+      const die = els.pdie.value.trim();
+      const series = els.pseries.value.trim();
+
+      if (!name) return toast('Missing', 'Product name is required.');
+      if (!sizeRaw) return toast('Missing', 'At least one size is required.');
+      if (!weightRaw) return toast('Missing', 'At least one weight is required.');
+
+      const payloads = [];
+
+      // Size-wise format: "8 ft:0.45,0.52; 10 ft:0.61"
+      if (weightRaw.includes(':')) {
+        const groups = weightRaw.split(';').map(g => g.trim()).filter(Boolean);
+        groups.forEach(group => {
+          const parts = group.split(':');
+          if (parts.length !== 2) return;
+          const size = parts[0].trim();
+          const weights = parts[1]
+            .split(',')
+            .map(w => Number(w.trim()))
+            .filter(w => Number.isFinite(w) && w > 0);
+          weights.forEach(weight => payloads.push({ name, size, weight, die, series, enabled: true }));
+        });
+      } else {
+        const sizes = sizeRaw.split(',').map(s => s.trim()).filter(Boolean);
+        const weights = weightRaw
+          .split(',')
+          .map(w => Number(w.trim()))
+          .filter(w => Number.isFinite(w) && w > 0);
+
+        if (!sizes.length) return toast('Invalid', 'Please provide valid size values.');
+        if (!weights.length) return toast('Invalid', 'Please provide valid positive weight values.');
+
+        // Fallback mode: all weights applied to all sizes
+        sizes.forEach(size => {
+          weights.forEach(weight => {
+            payloads.push({ name, size, weight, die, series, enabled: true });
+          });
+        });
+      }
+
+      if (!payloads.length) {
+        return toast('Invalid', 'No valid size-weight pairs found. Use: 8 ft:0.450,0.520; 10 ft:0.610');
+      }
+
+      await Promise.all(
+        payloads.map((payload) =>
+          api('/api/admin/products', { method: 'POST', body: JSON.stringify(payload) })
+        )
+      );
+      els.pname.value = '';
+      els.psize.value = '';
+      els.pweight.value = '';
+      els.pdie.value = '';
+      els.pseries.value = '';
+      toast('Added', `${payloads.length} product entries created and enabled.`);
+      await refreshProducts();
+    }
+
+    async function toggleProduct(id, enabled) {
+      await api(`/api/admin/products/${id}`, { method: 'PATCH', body: JSON.stringify({ enabled }) });
+      toast(enabled ? 'Enabled' : 'Disabled', 'Product status updated.');
+      await refreshProducts();
+    }
+
+    async function deleteProduct(id) {
+      if (!confirm('Are you sure you want to delete this product?')) return;
+      await api(`/api/admin/products/${id}`, { method: 'DELETE' });
+      toast('Deleted', 'Product removed.');
+      await refreshProducts();
+    }
+
+    async function refreshHardware() {
+      els.hardwareTbody.innerHTML = `<tr><td colspan="4" class="muted">Loading...</td></tr>`;
+      const items = await api('/api/admin/hardware');
+      if (!items.length) {
+        els.hardwareTbody.innerHTML = `<tr><td colspan="4" class="muted">No hardware yet.</td></tr>`;
+        return;
+      }
+      els.hardwareTbody.innerHTML = items.map(h => {
+        const status = h.enabled ? `<span class="pill ok">Enabled</span>` : `<span class="pill bad">Disabled</span>`;
+        const btn = h.enabled
+          ? `<button class="btn danger" data-action="toggle-hardware" data-id="${h._id}" data-enabled="false">Disable</button>`
+          : `<button class="btn good" data-action="toggle-hardware" data-id="${h._id}" data-enabled="true">Enable</button>`;
+        return `
+          <tr>
+            <td>${escapeHtml(h.name)}</td>
+            <td class="right">${escapeHtml(h.rate)}</td>
+            <td class="nowrap">${status}</td>
+            <td class="right nowrap">
+              ${btn}
+              <button class="btn danger" data-action="delete-hardware" data-id="${h._id}" style="margin-left:4px;">Delete</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function addHardware() {
+      const name = els.hname.value.trim();
+      const rate = Number(els.hrate.value || 0);
+
+      if (!name) return toast('Missing', 'Item name is required.');
+      await api('/api/admin/hardware', { method: 'POST', body: JSON.stringify({ name, rate, enabled: true }) });
+      els.hname.value = '';
+      els.hrate.value = '';
+      toast('Added', 'Hardware item created.');
+      await refreshHardware();
+    }
+
+    async function toggleHardware(id, enabled) {
+      await api(`/api/admin/hardware/${id}`, { method: 'PATCH', body: JSON.stringify({ enabled }) });
+      toast(enabled ? 'Enabled' : 'Disabled', 'Hardware status updated.');
+      await refreshHardware();
+    }
+
+    async function deleteHardware(id) {
+      if (!confirm('Are you sure you want to delete this hardware?')) return;
+      await api(`/api/admin/hardware/${id}`, { method: 'DELETE' });
+      toast('Deleted', 'Hardware removed.');
+      await refreshHardware();
+    }
+
+    async function refreshQuotes() {
+      const limit = Math.min(200, Math.max(1, Number(els.quotesLimit.value || 50)));
+      els.quotesTbody.innerHTML = '<tr><td colspan="6" class="muted">Loading...</td></tr>';
+      const items = await api('/api/admin/quotes?limit=' + limit);
+      if (!items.length) {
+        els.quotesTbody.innerHTML = '<tr><td colspan="6" class="muted">No quotations saved yet.</td></tr>';
+        return;
+      }
+      els.quotesTbody.innerHTML = items.map(q => {
+        const created = new Date(q.createdAt).toLocaleString();
+        const gt = q && q.totals && q.totals.grandTotal !== undefined ? Number(q.totals.grandTotal).toFixed(2) : '-';
+        const quoteId = q.quoteId || q._id || '-';
+        return '<tr>' +
+          '<td class="nowrap"><strong>' + escapeHtml(quoteId) + '</strong></td>' +
+          '<td class="nowrap">' + escapeHtml(created) + '</td>' +
+          '<td>' + escapeHtml(q.clientName || '-') + '</td>' +
+          '<td>' + escapeHtml(q.quotationName || '-') + '</td>' +
+          '<td class="right nowrap">₹' + escapeHtml(gt) + '</td>' +
+          '<td class="right nowrap">' +
+          '<button class="btn" data-action="quote" data-id="' + q._id + '">View</button>' +
+          '<button class="btn danger" data-action="delete-quote" data-id="' + q._id + '" style="margin-left: 4px;">Delete</button>' +
+          '</td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    async function viewQuote(id) {
+      const q = await api(`/api/admin/quotes/${id}`);
+      els.quoteDetails.style.display = 'block';
+      const quoteId = q.quoteId || q._id || '-';
+      els.quoteTitle.textContent = `Quote ID: ${quoteId} | ${q.clientName || 'Client'} â€” ${q.quotationName || 'Quotation'} (${new Date(q.createdAt).toLocaleString()})`;
+
+      let html = `<table>
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Size</th>
+            <th class="right">Qty</th>
+            <th class="right">Wt/pc (kg)</th>
+            <th class="right">Total Wt. (kg)</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      if (q.cart && q.cart.length > 0) {
+        q.cart.forEach(item => {
+          const name = item.productName || item.series || item.name || '-';
+          const size = item.size || item.length || '-';
+          const qty = item.qty || item.quantity || '0';
+          const wtpc = item.wtPerPc || item.weightPerPiece || '0';
+          const totalWt = item.totalWt || item.totalWeight || '0';
+
+          html += `<tr>
+            <td>${escapeHtml(name)}</td>
+            <td>${escapeHtml(size)}</td>
+            <td class="right">${escapeHtml(qty)}</td>
+            <td class="right">${escapeHtml(wtpc)}</td>
+            <td class="right">${escapeHtml(totalWt)}</td>
+          </tr>`;
+        });
+      } else {
+        html += `<tr><td colspan="5" class="muted">No products found in this quotation.</td></tr>`;
+      }
+
+      html += `</tbody></table>`;
+
+      if (q.hwCart && q.hwCart.length > 0) {
+        html += `<div style="margin-top: 14px; color: var(--secondary); font-size: 13px; font-weight: bold;">Hardware & Accessories</div>
+        <table style="margin-top: 6px;">
+          <thead>
+            <tr>
+              <th>Item Description</th>
+              <th class="right">Qty</th>
+              <th class="right">Total (â‚¹)</th>
+            </tr>
+          </thead>
+          <tbody>`;
+        q.hwCart.forEach(hw => {
+          const name = hw.name || hw.description || '-';
+          const qty = hw.qty || hw.quantity || '0';
+          const total = hw.totalPrice || hw.total || '0';
+          html += `<tr>
+            <td>${escapeHtml(name)}</td>
+            <td class="right">${escapeHtml(qty)}</td>
+            <td class="right">${escapeHtml(total)}</td>
+          </tr>`;
+        });
+        html += `</tbody></table>`;
+      }
+
+      if (q.totals && q.totals.grandTotal !== undefined) {
+        html += `<div style="margin-top: 14px; text-align: right; font-size: 14px;">
+          <span class="muted">Grand Total:</span> <strong style="color: #dfe6ff;">â‚¹${Number(q.totals.grandTotal).toFixed(2)}</strong>
+        </div>`;
+      }
+
+      els.quoteDetailsContent.innerHTML = html;
+      toast('Loaded', 'Quotation details opened.');
+    }
+
+    async function deleteQuote(id) {
+      if (!confirm('Are you sure you want to delete this quotation?')) return;
+      await api(`/api/admin/quotes/${id}`, { method: 'DELETE' });
+      toast('Deleted', 'Quotation removed.');
+      if (els.quoteDetails.style.display === 'block') els.quoteDetails.style.display = 'none';
+      await refreshQuotes();
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    // Events
+    els.loginBtn.addEventListener('click', () => login().catch(e => toast('Login failed', e.message)));
+    els.logoutBtn.addEventListener('click', () => { clearToken(); toast('Logged out', 'Token removed.'); });
+    els.refreshProductsBtn.addEventListener('click', () => refreshProducts().catch(e => toast('Error', e.message)));
+    els.addProductBtn.addEventListener('click', () => addProduct().catch(e => toast('Error', e.message)));
+    els.productsTbody.addEventListener('click', (e) => {
+      const btnToggle = e.target.closest('button[data-action="toggle"]');
+      if (btnToggle) return toggleProduct(btnToggle.dataset.id, btnToggle.dataset.enabled === 'true').catch(err => toast('Error', err.message));
+
+      const btnDelete = e.target.closest('button[data-action="delete-product"]');
+      if (btnDelete) return deleteProduct(btnDelete.dataset.id).catch(err => toast('Error', err.message));
+    });
+    
+    els.refreshHardwareBtn.addEventListener('click', () => refreshHardware().catch(e => toast('Error', e.message)));
+    els.addHardwareBtn.addEventListener('click', () => addHardware().catch(e => toast('Error', e.message)));
+    els.hardwareTbody.addEventListener('click', (e) => {
+      const btnToggle = e.target.closest('button[data-action="toggle-hardware"]');
+      if (btnToggle) return toggleHardware(btnToggle.dataset.id, btnToggle.dataset.enabled === 'true').catch(err => toast('Error', err.message));
+
+      const btnDelete = e.target.closest('button[data-action="delete-hardware"]');
+      if (btnDelete) return deleteHardware(btnDelete.dataset.id).catch(err => toast('Error', err.message));
+    });
+
+    els.refreshQuotesBtn.addEventListener('click', () => refreshQuotes().catch(e => toast('Error', e.message)));
+    els.quotesTbody.addEventListener('click', (e) => {
+      const btnView = e.target.closest('button[data-action="quote"]');
+      if (btnView) return viewQuote(btnView.dataset.id).catch(err => toast('Error', err.message));
+
+      const btnDelete = e.target.closest('button[data-action="delete-quote"]');
+      if (btnDelete) return deleteQuote(btnDelete.dataset.id).catch(err => toast('Error', err.message));
+    });
+    els.closeDetailsBtn.addEventListener('click', () => { els.quoteDetails.style.display = 'none'; });
+
+    renderAuth();
+    if (getToken()) {
+      refreshProducts().catch(() => { });
+      refreshHardware().catch(() => { });
+      refreshQuotes().catch(() => { });
+    }
+  </script>
+</body>
+
+</html>

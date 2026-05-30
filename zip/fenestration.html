@@ -1,0 +1,2510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khidkie™ | Fenestration</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Raleway:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* Brand Colors */
+            --primary: #c01918;     /* Red */
+            --secondary: #1d2762;   /* Dark Blue */
+            --accent: #3b82f6;      /* UI Blue */
+            --bg-body: #f8f9fa;
+            --bg-card: #ffffff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --sidebar-width: 380px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* --- LEFT SIDEBAR (CART) --- */
+        aside.cart-panel {
+            width: var(--sidebar-width);
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 50;
+            height: 100%;
+            position: fixed;
+            right: 0;
+            top: 0;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .cart-header {
+            padding: 1.5rem;
+            background: var(--secondary);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cart-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #fdfdfd;
+        }
+
+        .cart-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            background: white;
+        }
+
+        .cart-item {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            position: relative;
+            border-left: 4px solid var(--primary);
+        }
+
+        .cart-item h4 { font-size: 0.9rem; margin-bottom: 4px; color: var(--secondary); }
+        .cart-item p { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+        .cart-remove {
+            position: absolute; top: 10px; right: 10px;
+            color: #ef4444; cursor: pointer; background: none; border: none;
+        }
+
+        /* --- MAIN APP AREA --- */
+        main.app-container {
+            flex: 1;
+            margin-right: var(--sidebar-width); /* Space for fixed cart */
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* HEADER */
+        header.top-bar {
+            background: white;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 40;
+        }
+
+        .brand-logo {
+            font-family: 'Raleway', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .brand-logo span { color: var(--primary); }
+
+        .progress-steps {
+            display: flex;
+            gap: 10px;
+        }
+        .step-dot {
+            height: 8px; width: 40px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+        .step-dot.active { background: var(--primary); }
+
+        /* CONTENT VIEWS */
+        .view-section {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.4s ease;
+        }
+        .view-section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-header { margin-bottom: 2rem; }
+        .section-title { font-size: 1.8rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem; }
+        .section-subtitle { color: var(--text-muted); }
+
+        /* GRID SYSTEMS */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* CARDS (Series & Product) */
+        .selection-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .selection-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            border-color: var(--secondary);
+        }
+        .card-img-box {
+            height: 160px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #cbd5e1;
+        }
+        .card-img-box img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .card-body { padding: 1.5rem; }
+        .card-title { font-weight: 700; font-size: 1.1rem; color: var(--secondary); margin-bottom: 0.5rem; }
+        .card-desc { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* CONFIGURATION VIEW */
+        .config-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        
+        .bom-list {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .bom-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .bom-item:last-child { border-bottom: none; }
+        .bom-checkbox { margin-right: 15px; transform: scale(1.2); accent-color: var(--primary); }
+        .bom-details { flex: 1; }
+        .bom-weight { font-weight: 700; color: var(--secondary); background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; }
+        .bom-weight.missing { color: #ef4444; background: #fee2e2; }
+
+        .finish-selector {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .color-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .color-option {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .color-option.selected { border-color: var(--secondary); transform: scale(1.1); }
+
+        /* FORM CONTROLS */
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+        }
+
+        /* UTILS */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.95rem;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-primary { background: var(--primary); color: white; width: 100%; justify-content: center; }
+        .btn-primary:hover { background: #a31413; }
+        .btn-back { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+        .btn-back:hover { border-color: var(--secondary); color: var(--secondary); }
+
+        .hidden { display: none !important; }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            aside.cart-panel {
+                transform: translateX(100%);
+                width: 100%;
+                max-width: 400px;
+            }
+            aside.cart-panel.open { transform: translateX(0); }
+            main.app-container { margin-right: 0; }
+            .cart-toggle-btn { display: block; }
+            .config-layout { grid-template-columns: 1fr; }
+        }
+
+        .cart-toggle-btn {
+            display: none;
+            position: fixed; bottom: 20px; right: 20px;
+            background: var(--secondary); color: white;
+            width: 60px; height: 60px; border-radius: 50%;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 60;
+            border: none; cursor: pointer; font-size: 1.5rem;
+        }
+        /* =========================
+   WELCOME INTRO OVERLAY
+========================= */
+
+#welcomeOverlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #1d2762, #0f172a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: welcomeFadeOut 1s ease forwards;
+    animation-delay: 2.5s;
+}
+
+.welcome-content {
+    text-align: center;
+    color: white;
+    animation: welcomeScale 1.5s ease;
+}
+
+.welcome-content h1 {
+    font-family: 'Raleway', sans-serif;
+    font-size: 2.6rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.welcome-content h1 span {
+    color: #c01918;
+}
+
+.welcome-content p {
+    font-size: 1rem;
+    letter-spacing: 2px;
+    opacity: 0.85;
+}
+
+.welcome-line {
+    width: 120px;
+    height: 3px;
+    background: #c01918;
+    margin: 25px auto;
+    border-radius: 2px;
+    animation: lineGrow 1.2s ease;
+}
+
+.welcome-loader {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.welcome-loader span {
+    width: 8px;
+    height: 8px;
+    background: #c01918;
+    border-radius: 50%;
+    animation: pulse 1.2s infinite ease-in-out;
+}
+
+.welcome-loader span:nth-child(2) { animation-delay: 0.2s; }
+.welcome-loader span:nth-child(3) { animation-delay: 0.4s; }
+
+/* ANIMATIONS */
+@keyframes welcomeScale {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes lineGrow {
+    from { width: 0; }
+    to   { width: 120px; }
+}
+
+@keyframes pulse {
+    0%, 80%, 100% { opacity: 0.3; }
+    40% { opacity: 1; }
+}
+
+@keyframes welcomeFadeOut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+    </style>
+</head>
+<!-- WELCOME INTRO OVERLAY -->
+<div id="welcomeOverlay">
+    <div class="welcome-content">
+        <h1>Welcome to <span>Smart Fenestration</span></h1>
+        <p>by Khidkie™</p>
+
+        <div class="welcome-line"></div>
+
+        <div class="welcome-loader">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+</div>
+
+<body>
+
+    <button class="cart-toggle-btn" onclick="toggleCart()">
+        <i class="fas fa-shopping-cart"></i>
+    </button>
+
+    <aside class="cart-panel" id="cartPanel">
+        <div class="cart-header">
+            <h3><i class="fas fa-clipboard-list"></i> Quotation Cart</h3>
+            <button onclick="toggleCart()" class="cart-remove" style="color:white; position:static;"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="cart-body" id="cartItemsContainer">
+            <div style="text-align:center; padding: 40px; color:#aaa;">
+                <i class="fas fa-box-open fa-3x"></i><br><br>
+                Cart is empty
+            </div>
+        </div>
+
+        <div class="cart-footer">
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                <span>Total Weight:</span>
+                <strong id="cartTotalWeight">0.00 kg</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:1.1rem; color:var(--primary);">
+                <span>Est. Cost:</span>
+                <strong id="cartTotalCost">₹0.00</strong>
+            </div>
+            
+            <div style="margin-bottom:15px;">
+                <label style="font-size:0.8rem; font-weight:bold;">Aluminium Rate (₹/kg):</label>
+                <input type="number" id="baseRate" value="0" class="form-control" oninput="renderCart()">
+            </div>
+
+            <button class="btn btn-primary" onclick="generatePDF()"><i class="fas fa-file-download"></i> Download Quotation</button>
+        </div>
+    </aside>
+
+    <main class="app-container">
+        
+        <header class="top-bar">
+            <div class="brand-logo">Khidkie™ | Fenestration <span></span></div>
+            <div class="progress-steps">
+                <div class="step-dot active" id="dot1"></div>
+                <div class="step-dot" id="dot2"></div>
+                <div class="step-dot" id="dot3"></div>
+            </div>
+            <button class="btn btn-back" id="globalBackBtn" onclick="goBack()" style="display:none;">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+        </header>
+
+        <section id="view-series" class="view-section active">
+            <div class="section-header">
+                <h2 class="section-title">Select Series you want to use ?</h2>
+                <p class="section-subtitle">Choose the aluminium profile series to begin configuration.</p>
+            </div>
+            <div class="grid-cards" id="seriesGrid">
+                </div>
+        </section>
+
+        <section id="view-products" class="view-section">
+            <div class="section-header">
+                <h2 class="section-title">Select Product Type</h2>
+                <p class="section-subtitle">What do you want to build with <span id="lblSelectedSeries" style="color:var(--primary); font-weight:700;"></span>?</p>
+            </div>
+            <div class="grid-cards" id="productGrid">
+                </div>
+        </section>
+
+        <section id="view-config" class="view-section">
+            <div class="section-header">
+                <h2 class="section-title">Configure Product</h2>
+                <p class="section-subtitle">Select size, finish, and components.</p>
+            </div>
+            <div style="margin-bottom:20px; text-align:center;">
+    <img 
+        id="configProductImg" 
+        src="" 
+        alt="Selected Product" 
+        style="
+            max-width:320px;
+            width:100%;
+            border-radius:12px;
+            border:1px solid #e2e8f0;
+            background:#f8fafc;
+            padding:8px;
+        "
+    >
+</div>
+
+
+            <div class="config-layout">
+                <div>
+                    <h4 style="margin-bottom:10px;">Required Components (Bill of Materials)</h4>
+                    <div class="bom-list" id="bomList">
+                        </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:20px;">
+                    
+                    <div class="finish-selector">
+                        <h4 style="margin-bottom:10px;"><i class="fas fa-ruler-combined"></i> 1. Select Size</h4>
+                        <select id="sizeSelector" class="form-control" onchange="renderBOM()">
+                            <option value="12ft">12 Ft</option>
+                            <option value="13ft">13 Ft</option>
+                            <option value="14ft">14 Ft</option>
+                            <option value="15ft">15 Ft</option>
+                            <option value="16ft"selected>16 Ft</option>
+                        </select>
+                    </div>
+
+                    <div class="finish-selector">
+                        <h4 style="margin-bottom:10px;">2. Surface Finish</h4>
+                        <select id="finishType" class="form-control" onchange="updateColors()">
+                            <option value="anodize">Anodize</option>
+                            <option value="powder">Powder Coating</option>
+                            <option value="chrome">Chrome Plating</option>
+                        </select>
+                        
+                        <div style="margin-top:15px;">
+                            <label style="font-size:0.85rem; color:#666;">Select Color:</label>
+                            <div class="color-grid" id="colorGrid">
+                                </div>
+                            <input type="hidden" id="selectedColorName" value="Natural Silver">
+                        </div>
+                    </div>
+
+
+                    <button class="btn btn-primary" style="padding:15px;" onclick="addItemToCart()">
+                        <i class="fas fa-cart-plus"></i> Add to Quotation
+                    </button>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+<script>
+    // --- 1. DATA STRUCTURES (SCALABLE JSON) ---
+    
+    // FINISH OPTIONS
+    const FINISH_DB = {
+        'anodize': [
+            { name: 'Natural Silver', hex: '#d1d5db' },
+            { name: 'Champagne', hex: '#e4d0a6' },
+            { name: 'Bronze', hex: '#927653' },
+            { name: 'Black', hex: '#1a1a1a' }
+        ],
+        'powder': [
+            { name: 'Pure White', hex: '#ffffff', border: '#ddd' },
+            { name: 'Ivory', hex: '#fffff0' },
+            { name: 'Anthracite Grey', hex: '#374151' },
+            { name: 'Jet Black', hex: '#000000' },
+            { name: 'Signal Red', hex: '#dc2626' },
+            { name: 'Chocolate Brown', hex: '#451a03' }
+        ],
+        'chrome': [
+            { name: 'Polished Silver', hex: '#e5e7eb', border: '#aaa' },
+            { name: 'Gold', hex: '#fbbf24' },
+            { name: 'Rose Gold', hex: '#f43f5e' }
+        ]
+    };
+
+    // SERIES LIST (Added your full list)
+    const SERIES_DB = [
+        { id: 'regular_series', name: 'Regular Series', desc: 'Standard aluminium sliding window systems.', img: 'assets/images/regular series page.png'},
+        { id: 'door_section', name: 'Door Section', desc: 'Aluminium door profiles for residential and commercial use.', img: 'assets/images/door section.png' },
+        { id: 'partition_section', name: 'Partition Section', desc: 'Office partitions, shop fronts, and internal dividers.', img: 'assets/images/partition section.png' },
+        { id: 'domal_26', name: '26mm Domal Series', desc: 'Premium domal sliding system with smooth performance.', img: 'assets/images/26mm Domal series.png' },
+        { id: 'mini_domal_23', name: 'Mini Domal 23mm Series', desc: 'Compact domal system for light-duty sliding applications.', img: 'assets/images/23mm Mini Domal.png' },
+        { id: 'gulf_26', name: '26mm Gulf Series', desc: 'Deep and durable sliding system for wider openings.', img: 'assets/images/26mm gulf series.png' },
+        { id: 'gulf_29', name: '29mm Gulf Series', desc: 'Deep-frame heavy-duty sliding system for large spans.', img: 'assets/images/29mm gulf series.png' },
+        { id: 'gulf_35x59', name: '35×59 Gulf Series', desc: 'Balanced strength profiles for sliding applications.', img: 'assets/images/35 x 59 gulf series.png' },
+        { id: 'cardinal_26', name: '26mm Cardinal Series', desc: 'Strong architectural profiles for heavy-duty usage.', img: 'assets/images/26mm cardinal series.png' },
+        { id: 'cardinal_32', name: '32mm Cardinal Series', desc: 'Extra-strong profiles for high-load architectural projects.', img: 'assets/images/32mm cardinal series.png' },
+        { id: 'cardinal_35x75', name: '35×75 Cardinal Series', desc: 'Wide and reinforced sections for premium structural use.', img: 'assets/images/35 x 75 cardinal series.png' },
+        { id: 'r40_openable', name: 'R40 Z Openable Series', desc: 'Residential openable windows and doors.', img: 'assets/images/R40 Z openable (casement) series.png' },
+        { id: 'r50_openable', name: 'R50 Z Openable Series', desc: 'Heavy-duty openable system for large openings.', img: 'assets/images/R50 Z openable (casement) series.png' },
+        { id: 'ventana_29', name: '29mm Ventana Series', desc: 'High-performance sliding system with modern aesthetics.', img: 'assets/images/29mm ventana series.png' },
+        { id: 'grill_section', name: 'Grill Section', desc: 'Protective aluminium grill and safety sections.', img: 'assets/images/grill section.png' },
+        { id: 'sliding_folding_50', name: 'Sliding Folding 50mm Series', desc: 'Large-span sliding and folding door systems.', img: 'assets/images/sliding folding 50mm series.png' },
+        { id: 'sliding_mosquito', name: 'Sliding Mosquito Net Section', desc: 'Sliding mosquito net solutions for windows and doors.', img: 'assets/images/sliding mosquito series.png' },
+        { id: 'roller_mosquito', name: 'Roller Mosquito Net Section', desc: 'Roller-based mosquito net systems.', img: 'assets/images/roller mosquito series.png' },
+        { id: 'angle_t_patti', name: 'Angle + T Patti + Mosquito Channel', desc: 'Supporting profiles and accessories for fabrication.', img: 'assets/images/angle + t patti + mosquito channel.png' },
+        { id: 'tube_sections', name: 'Rectangle Tube + Square Tube', desc: 'Structural aluminium tubes for multiple applications.', img: 'assets/images/rectangle tubes and square tubes.png' }
+    ];
+
+    // ==============================
+    // PRODUCT DATABASE (With Multi-Size Weights)
+    // ==============================
+    const PRODUCT_DB = {
+  regular_series: [
+    {
+      id: 'standard_sliding_window_1t',
+      name: '1 Track Sliding Window',
+      desc: 'Standard 1-track sliding window system',
+      img: 'assets/images/1-track-standard-window.png',
+      recipe: [
+        { 
+            id: "SRE_001", 
+            name: "3/4 Single Track Top", 
+            weights: { "15ft": 1.250 } 
+        },
+        { 
+            id: "SRE_002", 
+            name: "3/4 Single Track Bottom", 
+            weights: { "15ft": 1.300 } 
+        },
+        // HERE IS THE FIX: Use Arrays [ ] for multiple options
+        { 
+            id: "SRE_015", 
+            name: "3/4 Handle", 
+            weights: { 
+                "12ft": [0.900, 1.300, 1.500, 2.000], 
+                "15ft": [1.200, 1.600, 2.000, 2.400] 
+            } 
+        },
+        { 
+            id: "SRE_016", 
+            name: "3/4 Interlock", 
+            weights: { 
+                "12ft": [1.100, 1.350, 1.800, 2.250], 
+                "15ft": [1.450, 1.750, 2.200, 2.800] 
+            } 
+        },
+        { 
+            id: "SRE_017", 
+            name: "3/4 Top Bottom", 
+            weights: { "12ft": 0.900, "13ft": 1.300, "14ft": 1.500, "15ft": 2.000, "16ft": 1.200 } 
+        },
+        { 
+            id: "SRE_018", 
+            name: "Long Top Bottom", 
+            weights: { "15ft": 2.000 } 
+        },
+        { 
+            id: "SRE_019", 
+            name: "3/4 Middle", 
+            weights: { "14ft": 1.400, "15ft": 1.800 } 
+        },
+        { 
+            id: "SRE_020", 
+            name: "60mm Handle", 
+            weights: { "12ft": 1.800, "15ft": 2.200 } 
+        },
+        { 
+            id: "SRE_021", 
+            name: "60mm Interlock", 
+            weights: { "12ft": 1.850, "15ft": 2.300 } 
+        },
+        { 
+            id: "SRE_022", 
+            name: "60mm Interlock (Mosquito)", 
+            weights: { "12ft": 1.850, "15ft": 2.300 } 
+        },
+        { 
+            id: "SRE_023", 
+            name: "60mm Top Bottom", 
+            weights: { "12ft": 1.800, "15ft": 2.200 } 
+        }
+      ]
+    },
+
+     {
+      id: 'standard_sliding_window_2t',
+      name: '2 Track Sliding Window',
+      desc: 'Standard 2-track sliding window system',
+      img: 'assets/images/2 track sliding window.png',
+      recipe: [
+        { 
+            id: "SRE_003", 
+            name: "3/4 2 Track Top", 
+            weights: {
+                "12ft": [1.350, 1.650, 2.100, 2.400],
+                "15ft": [1.750, 2.100, 2.500, 3.000] 
+            } 
+        },
+        { 
+            id: "SRE_004", 
+            name: "3/4 2 Track Bottom", 
+            weights: { 
+                 "12ft": [1.650, 2.100, 2.500, 3.100],
+                "15ft": [2.100, 2.500, 3.000, 3.750] 
+            } 
+        },
+         { 
+            id: "SRE_009", 
+            name: " 1’’ 2 Track Top", 
+            weights: { 
+                "15ft": [2.700] 
+            } 
+        },
+        { 
+            id: "SRE_010", 
+            name: " 1’’ 2 Track Bottom", 
+            weights: { 
+                "15ft": [2.900] 
+            } 
+        },
+        // HERE IS THE FIX: Use Arrays [ ] for multiple options
+        { 
+            id: "SRE_015", 
+            name: "3/4 Handle", 
+            weights: { 
+                "12ft": [0.900, 1.300, 1.500, 2.000], 
+                "15ft": [1.200, 1.600, 2.000, 2.400] 
+            } 
+        },
+        { 
+            id: "SRE_016", 
+            name: "3/4 Interlock", 
+            weights: { 
+                "12ft": [1.100, 1.350, 1.800, 2.250], 
+                "15ft": [1.450, 1.750, 2.200, 2.800] 
+            } 
+        },
+        { 
+            id: "SRE_017", 
+            name: "3/4 Top Bottom", 
+            weights: { 
+            "12ft": [0.900, 1.300, 1.500, 2.000],
+            "15ft": [1.200, 1.600, 2.000, 2.400] 
+             } 
+        },
+        { 
+            id: "SRE_018", 
+            name: "Long Top Bottom", 
+            weights: { "15ft": 2.000 } 
+        },
+        { 
+            id: "SRE_019", 
+            name: "3/4 Middle", 
+            weights: { 
+                "15ft": [1.400, 1.800] 
+             } 
+        },
+        { 
+            id: "SRE_020", 
+            name: "60mm Handle", 
+            weights: { "12ft": 1.800, "15ft": 2.200 } 
+        },
+        { 
+            id: "SRE_021", 
+            name: "60mm Interlock", 
+            weights: { "12ft": 1.850, "15ft": 2.300 } 
+        },
+        { 
+            id: "SRE_022", 
+            name: "60mm Interlock (Mosquito)", 
+            weights: { "12ft": 1.850, "15ft": 2.300 } 
+        },
+        { 
+            id: "SRE_023", 
+            name: "60mm Top Bottom", 
+            weights: { "12ft": 1.800, "15ft": 2.200 } 
+        }
+      ]
+    }, 
+
+    {
+      id: 'standard_sliding_window_3t',
+      name: '3 Track Sliding Window',
+      desc: 'Standard 3-track sliding window system',
+      img: 'assets/images/3 track standard window.png',
+      recipe: [
+        { 
+            id: "SRE_005", 
+            name: "3/4 3 Track Top", 
+            weights: {
+                "12ft": [1.800, 2.250, 2.800, 3.300],
+                "15ft": [2.300, 2.900, 3.500, 4.200] 
+            } 
+        },
+        { 
+            id: "SRE_006", 
+            name: "3/4 3 Track Bottom", 
+            weights: { 
+                 "12ft": [2.400, 2.900, 3.400, 4.000],
+                "15ft": [3.000, 3.500, 4.000, 5.200] 
+            } 
+        },
+        { 
+            id: "SRE_011", 
+            name: " 1’’ 3 Track Top", 
+            weights: { 
+                "15ft": [3.800] 
+            } 
+        },
+        { 
+            id: "SRE_012", 
+            name: " 1’’ 3 Track Bottom", 
+            weights: { 
+                "15ft": [4.600] 
+            } 
+        },
+        // HERE IS THE FIX: Use Arrays [ ] for multiple options
+        { 
+            id: "SRE_015", 
+            name: "3/4 Handle", 
+            weights: { 
+                "12ft": [0.900, 1.300, 1.500, 2.000], 
+                "15ft": [1.200, 1.600, 2.000, 2.400] 
+            } 
+        },
+        { 
+            id: "SRE_016", 
+            name: "3/4 Interlock", 
+            weights: { 
+                "12ft": [1.100, 1.350, 1.800, 2.250], 
+                "15ft": [1.450, 1.750, 2.200, 2.800] 
+            } 
+        },
+        { 
+            id: "SRE_017", 
+            name: "3/4 Top Bottom", 
+            weights: { 
+            "12ft": [0.900, 1.300, 1.500, 2.000],
+            "15ft": [1.200, 1.600, 2.000, 2.400] 
+             } 
+        },
+        { 
+            id: "SRE_018", 
+            name: "Long Top Bottom", 
+            weights: { "15ft": 2.000 } 
+        },
+        { 
+            id: "SRE_019", 
+            name: "3/4 Middle", 
+            weights: { 
+                "15ft": [1.400, 1.800] 
+             } 
+        },
+        { 
+            id: "SRE_020", 
+            name: "60mm Handle", 
+            weights: { "12ft": 1.800, "15ft": 2.200 } 
+        },
+        { 
+            id: "SRE_021", 
+            name: "60mm Interlock", 
+            weights: { "12ft": 1.850, "15ft": 2.300 } 
+        },
+        { 
+            id: "SRE_022", 
+            name: "60mm Interlock (Mosquito)", 
+            weights: { "12ft": 1.850, "15ft": 2.300 } 
+        },
+        { 
+            id: "SRE_023", 
+            name: "60mm Top Bottom", 
+            weights: { "12ft": 1.800, "15ft": 2.200 } 
+        }
+      ]
+    }, 
+    
+     {
+      id: 'standard_sliding_window_4t',
+      name: '4 Track Sliding Window',
+      desc: 'Standard 4-track sliding window system',
+      img: 'assets/images/4 track standard window.png',
+      recipe: [
+        { 
+            id: "SRE_007", 
+            name: "3/4 4 Track Top", 
+            weights: {
+                "15ft": [4.300] 
+            } 
+        },
+        { 
+            id: "SRE_008", 
+            name: "3/4 4 Track Bottom", 
+            weights: {
+                "15ft": [2.700] 
+            } 
+        },
+        { 
+            id: "SRE_013", 
+            name: " 1’’ 4 Track Top", 
+            weights: { 
+                "15ft": [5.700] 
+            } 
+        },
+        { 
+            id: "SRE_014", 
+            name: " 1’’ 4 Track Bottom", 
+            weights: { 
+                "15ft": [6.200] 
+            } 
+        },
+        // HERE IS THE FIX: Use Arrays [ ] for multiple options
+        { 
+            id: "SRE_015", 
+            name: "3/4 Handle", 
+            weights: { 
+                "12ft": [0.900, 1.300, 1.500, 2.000], 
+                "15ft": [1.200, 1.600, 2.000, 2.400] 
+            } 
+        },
+        { 
+            id: "SRE_016", 
+            name: "3/4 Interlock", 
+            weights: { 
+                "12ft": [1.100, 1.350, 1.800, 2.250], 
+                "15ft": [1.450, 1.750, 2.200, 2.800] 
+            } 
+        },
+        { 
+            id: "SRE_017", 
+            name: "3/4 Top Bottom", 
+            weights: { 
+            "12ft": [0.900, 1.300, 1.500, 2.000],
+            "15ft": [1.200, 1.600, 2.000, 2.400] 
+             } 
+        },
+        { 
+            id: "SRE_018", 
+            name: "Long Top Bottom", 
+            weights: { "15ft": 2.000 } 
+        },
+        { 
+            id: "SRE_019", 
+            name: "3/4 Middle", 
+            weights: { 
+                "15ft": [1.400, 1.800] 
+             } 
+        },
+        { 
+            id: "SRE_020", 
+            name: "60mm Handle", 
+            weights: { "12ft": 1.800, "15ft": 2.200 } 
+        },
+        { 
+            id: "SRE_021", 
+            name: "60mm Interlock", 
+            weights: { "12ft": 1.850, "15ft": 2.300 } 
+        },
+        { 
+            id: "SRE_022", 
+            name: "60mm Interlock (Mosquito)", 
+            weights: { "12ft": 1.850, "15ft": 2.300 } 
+        },
+        { 
+            id: "SRE_023", 
+            name: "60mm Top Bottom", 
+            weights: { "12ft": 1.800, "15ft": 2.200 } 
+        }
+    ]
+    }
+],
+    
+
+  door_section: [
+    {
+      id: 'standard_hinged_door_2x1',
+      name: '2x1 standard hinged door system',
+      desc: 'Standard hinged door system',
+      img: 'assets/images/1-track-standard-window.png',
+      recipe: [
+        { 
+            id: "SDO 001 ", 
+            name: "2×1  HANDLE", 
+            weights: { 
+                 "12ft": [1.800], 
+                "15ft": [1.550, 1.750, 1.950, 2.250, 2.550, 2.850, 3.150] 
+            } 
+            },
+
+             { 
+            id: "SDO 002 ", 
+            name: "2×1  INTERLOCK", 
+            weights: { 
+                 "12ft": [2.050], 
+                "15ft": [2.500] 
+            } 
+            },
+
+             { 
+            id: "SDO 003 ", 
+            name: "2×1  BEARING BOTTOM ", 
+            weights: { 
+                 "12ft": [2.100], 
+                "15ft": [2.600] 
+            } 
+            },
+
+            
+             { 
+            id: "SDO 004 ", 
+            name: "2×1  MIDDLE ", 
+            weights: { 
+                 "12ft": [1.750], 
+                 "13ft":[1.950],
+                "15ft": [1.850, 2.250] 
+            } 
+            },
+
+             { 
+            id: "SDO 012 ", 
+            name: "2×1  P PIPE  ", 
+            weights: { 
+                 "12ft": [1.350], 
+                "15ft": [1.800] 
+            } 
+            },
+
+
+      ]
+    },
+
+    {
+      id: 'standard_hinged_door_3x1',
+      name: '3x1 standard hinged door system',
+      desc: 'Standard hinged door system',
+      img: 'assets/images/1-track-standard-window.png',
+      recipe: [
+        { 
+            id: "SDO 005 ", 
+            name: "3×1  HANDLE", 
+            weights: { 
+                 "12ft": [1.800], 
+                "15ft": [1.550, 1.750, 1.950, 2.250, 2.550, 2.850, 3.150] 
+            } 
+            },
+
+             { 
+            id: "SDO 006 ", 
+            name: "3×1 MIDDLE", 
+            weights: { 
+                 "12ft": [2.050], 
+                "15ft": [2.500] 
+            }
+            },
+      ]
+    },
+ 
+    {
+      id: 'standard_hinged_door_molding',
+      name: 'molding doors system',
+      desc: 'Decorative molding doors system',
+      img: 'assets/images/1-track-standard-window.png',
+      recipe: [
+        { 
+            id: "SDO 007", 
+            name: "2.5×1 MOLDING HANDLE", 
+            weights: {  "15ft": [2.400, 2.800] } 
+            },
+
+             { 
+            id: "SDO 008 ", 
+            name: "2.5×1 MOLDING MIDDLE", 
+            weights: {  
+                "15ft": [2.800] 
+            } 
+            },
+
+             { 
+            id: "SDO 009 ", 
+            name: "3×1 MOLDING HANDLE ", 
+            weights: {
+                "15ft": [3.250] 
+            } 
+            },
+
+            
+             { 
+            id: "SDO 010 ", 
+            name: "3×1 MOLDING MIDDLE ", 
+            weights: { 
+                "15ft": [3.200] 
+            } 
+            },
+
+             { 
+            id: "SDO 013 ", 
+            name: "2.5×1.5  MOLDING PIPE (choose 16ft)", 
+            weights: {  
+                "16ft": [2.850] 
+            } 
+            },
+      ]
+    },
+],
+
+<!-- 23MM MINI DOMAL SERIES-->
+
+mini_domal_23: [
+    {
+      id: 'lightweight mini domal sliding window_2t',
+      name: '2 Track Sliding Window',
+      desc: 'Lightweight Mini Domal 2-track sliding window system ( <strong> select 16ft </strong> )',
+      img: 'assets/images/2 track sliding window.png',
+      recipe: [
+        { 
+            id: "SSD 004", 
+            name: "2 Track (PLAIN)", 
+            weights: { "16ft": 2.600 } 
+        },
+        { 
+            id: "SSD 005", 
+            name: "2 Track (BOX)", 
+            weights: { "16ft": 2.700 } 
+        },
+        // HERE IS THE FIX: Use Arrays [ ] for multiple options
+        { 
+            id: "SSD 006", 
+            name: "2 Track (ANGLE)", 
+            weights: { 
+                "16ft": [1.900]
+            } 
+        },
+        { 
+            id: "SSD 007", 
+            name: "2 Track Grill Frame", 
+            weights: { 
+                "16ft": [4.200]
+            } 
+        },
+        { 
+            id: "SSD 009", 
+            name: "23MM Shutter", 
+           weights: { 
+                "16ft": [2.300]
+            }  
+        },
+        { 
+            id: "SSD 010", 
+            name: "23MM Interlock", 
+            weights: { "16ft": 1.000 } 
+        },
+        {
+            id:"SMP 013",
+            name: "M Patti",
+            weights:{
+                "16ft": [0.400]
+            }
+        }
+    ]
+},
+
+    {
+      id: 'lightweight mini domal sliding window_3t',
+      name: '3 Track Sliding Window',
+      desc: 'Lightweight Mini Domal 3-track sliding window system ( <strong> select 16ft </strong> )',
+      img: 'assets/images/3 track standard window.png',
+      recipe: [
+        { 
+            id: "SSD 001", 
+            name: "3 Track (PLAIN)", 
+            weights: { 
+                "16ft": [3.500, 3.900]
+            } 
+        },
+        { 
+            id: "SSD 002", 
+            name: "3 Track (BOX)", 
+            weights: { "16ft": 4.600 } 
+        },
+        // HERE IS THE FIX: Use Arrays [ ] for multiple options
+        { 
+            id: "SSD 003", 
+            name: "3 Track (ANGLE)", 
+            weights: { 
+                "16ft": [2.850, 3.500]
+            } 
+        },
+        { 
+            id: "SSD 008", 
+            name: "3 Track Grill Frame", 
+            weights: { 
+                "16ft": [5.900]
+            } 
+        },
+        { 
+            id: "SSD 009", 
+            name: "23MM Shutter", 
+           weights: { 
+                "16ft": [2.300]
+            }  
+        },
+        { 
+            id: "SSD 010", 
+            name: "23MM Interlock", 
+            weights: { "16ft": 1.000 } 
+        },
+        {
+            id:"SMP 013",
+            name: "M Patti",
+            weights:{
+                "16ft": [0.400]
+            }
+        }
+   ]
+    },
+],
+
+gulf_26: [
+    {
+      id: 'gulf sliding window_2t',
+      name: '2 Track Sliding Window',
+      desc: 'GULF 2-track sliding window system ( <strong> select 16ft </strong> )',
+      img: 'assets/images/2 track sliding window.png',
+      recipe: [
+        { 
+            id: "S26G 001", 
+            name: "26MM 2 Track Bottom", 
+            weights: { "16ft": 4.500 } 
+        },
+        { 
+            id: "S26G 002", 
+            name: "26MM 2 Track Vertical", 
+            weights: { "16ft": 2.800 } 
+        },
+        { 
+            id: "S26G 003", 
+            name: "26MM 2 Track Bottom (U)", 
+            weights: { 
+                "16ft": 4.700
+            } 
+        },
+        { 
+            id: "S26G 007", 
+            name: "26MM Top Adapter", 
+            weights: { 
+                "16ft": 0.760
+            } 
+        },
+        { 
+            id: "S26G 008", 
+            name: "26MM Track Cap", 
+           weights: { 
+                "16ft": 0.650
+            }  
+        },
+        { 
+            id: "S26G 009", 
+            name: "26MM Track Adapter", 
+            weights: { "16ft": 0.760 } 
+        },
+         { 
+            id: "S26G 010", 
+            name: "26MM Top Bottom", 
+            weights: { "16ft": 3.400 } 
+        },
+    ]
+},
+
+    {
+      id: 'gulf sliding window_3t',
+      name: '3 Track Sliding Window',
+      desc: 'GULF 3-track sliding window system ( <strong> select 16ft </strong> )',
+      img: 'assets/images/3 track standard window.png',
+      recipe: [
+        { 
+            id: "S26G 004", 
+            name: "26MM 3 Track Bottom", 
+            weights: { "16ft": 7.400 } 
+        },
+        { 
+            id: "S26G 005", 
+            name: "26MM 3 Track Vertical", 
+            weights: { "16ft": 4.000 } 
+        },
+        { 
+            id: "S26G 006", 
+            name: "26MM 3 Track Bottom (U)", 
+            weights: { 
+                "16ft": 6.800
+            } 
+        },
+        { 
+            id: "S26G 007", 
+            name: "26MM Top Adapter", 
+            weights: { 
+                "16ft": 0.760
+            } 
+        },
+        { 
+            id: "S26G 008", 
+            name: "26MM Track Cap", 
+           weights: { 
+                "16ft": 0.650
+            }  
+        },
+        { 
+            id: "S26G 009", 
+            name: "26MM Track Adapter", 
+            weights: { "16ft": 0.760 } 
+        },
+         { 
+            id: "S26G 010", 
+            name: "26MM Top Bottom", 
+            weights: { "16ft": 3.400 } 
+        },
+    ]
+},
+],
+
+//--- 26MM CARDINAL ---//
+
+cardinal_26: [
+    {
+      id: 'cardinal sliding window_2t',
+      name: '2 Track Sliding Window',
+      desc: 'CARDINAL 2-track sliding window system ( <strong> select 16ft </strong> )',
+      img: 'assets/images/2 track sliding window.png',
+      recipe: [
+        { 
+            id: "SDV 2601", 
+            name: "26MM 2 Track Cardinal", 
+            weights: { "16ft": 3.600 } 
+        },
+        { 
+            id: "SDV 2602", 
+            name: "26MM 2 Track Cardinal (BIG)", 
+            weights: { "16ft": 3.600 } 
+        },
+        { 
+            id: "SDV 2605", 
+            name: "26MM 2 Track + Grill Cardinal", 
+            weights: { 
+                "16ft": [5.600]
+            } 
+        },
+        { 
+            id: "SDV 2605", 
+            name: "26MM 2 Track + Grill (BIG)", 
+            weights: { 
+                "16ft": [4.900]
+            } 
+        },
+        { 
+            id: "SDV 2608", 
+            name: "26MM V Track Cap (V)", 
+           weights: { 
+                "16ft": [0.350]
+            }  
+        },
+        { 
+            id: "SDV 2609", 
+            name: "26MM V Track Cap (U)", 
+            weights: { "16ft": 0.350 } 
+        },
+    ]
+},
+
+    {
+      id: 'cardinal sliding window_3t',
+      name: '3 Track Sliding Window',
+      desc: 'CARDINAL 3-track sliding window system ( <strong> select 16ft </strong> )',
+      img: 'assets/images/3 track standard window.png',
+      recipe: [
+        { 
+            id: "SDV 2603", 
+            name: "26MM 3 Track Cardinal", 
+            weights: { 
+                "16ft": [4.900, 5.900]
+            } 
+        },
+        { 
+            id: "SDV 2604", 
+            name: "26MM 3 Track Cardinal (BIG)", 
+            weights: { "16ft": 5.900 } 
+        },
+        { 
+            id: "SDV 2606", 
+            name: "26MM 3 Track + Grill Cardinal", 
+            weights: { 
+                "16ft": [8.800]
+            } 
+        },
+        { 
+            id: "SDV 2608", 
+            name: "26MM V Track Cap (V)", 
+           weights: { 
+                "16ft": [0.350]
+            }  
+        },
+        { 
+            id: "SDV 2609", 
+            name: "26MM V Track Cap (U)", 
+            weights: { "16ft": 0.350 } 
+        },
+    ]
+},
+
+{
+      id: 'cardinal sliding window_4t',
+      name: '4 Track Sliding Window',
+      desc: 'CARDINAL 4-track sliding window system ( <strong> select 16ft </strong> )',
+      img: 'assets/images/3 track standard window.png',
+      recipe: [
+        { 
+            id: "SDV 2607", 
+            name: "26MM 4 Track Cardinal", 
+            weights: { 
+                "16ft": [8.800]
+            } 
+        },
+        { 
+            id: "SDV 2608", 
+            name: "26MM V Track Cap (V)", 
+           weights: { 
+                "16ft": [0.350]
+            }  
+        },
+        { 
+            id: "SDV 2609", 
+            name: "26MM V Track Cap (U)", 
+            weights: { "16ft": 0.350 } 
+        },
+    ]
+},
+],
+
+//--- 26MM DOMAL ---//
+
+domal_26: [
+    {
+      id: 'domal_26 sliding window_2t',
+      name: '2 Track Sliding Window',
+      desc: '26MM DOMAL 2-track sliding window system ( <strong> select 16ft </strong> )',
+      img: 'assets/images/2 track sliding window.png',
+      recipe: [
+        { 
+            id: "S26D 001", 
+            name: "26MM D 2 Track Frame", 
+            weights: { "16ft":[3.100, 3.700] } 
+        },
+        { 
+            id: "S26D 002", 
+            name: "26MM D 2 Track + Cover", 
+            weights: { "16ft": 4.100 } 
+        },
+        { 
+            id: "S26D 007", 
+            name: "26MM D 2 Track + Grill", 
+            weights: { 
+                "16ft": [4.500, 4.900]
+            } 
+        },
+        { 
+            id: "S26D 010", 
+            name: "26MM D Shutter", 
+            weights: { 
+                "16ft": [2.500, 2.650, 2.900, 3.250 ,3.400 ,3.850 ,4.050 ]
+            } 
+        },
+        { 
+            id: "S26D 011", 
+            name: "26MM EURO Shutter", 
+           weights: { "16ft": [ 3.100, 3.550] }  
+        },
+        { 
+            id: "S26D 012", 
+            name: "26×60 D Shutter", 
+            weights: { "16ft": 2.800 } 
+        },
+         { 
+            id: "S26D 013", 
+            name: "27MM DGU Shutter", 
+            weights: { "16ft": 3.700 } 
+        },
+         { 
+            id: "S26D 014", 
+            name: "27MM EURO DGU Shutter", 
+            weights: { "16ft": 3.850 } 
+        },
+         { 
+            id: "S26D 015", 
+            name: "Interlock 26MM", 
+            weights: { "16ft": 1.250 } 
+        },
+         { 
+            id: "S26D 016", 
+            name: "26MM Slim Interlock", 
+            weights: { "16ft": 2.600 } 
+        },
+         { 
+            id: "S26D 017", 
+            name: "26MM KPA Interlock", 
+            weights: { "16ft": 4.300 } 
+        },
+         { 
+            id: "S26D 018", 
+            name: "27MM DGU Interlock", 
+            weights: { "16ft": 2.400 } 
+        },
+         { 
+            id: "S26D 019", 
+            name: "27MM DGU KPA Interlock", 
+            weights: { "16ft": 4.300 } 
+        },
+         { 
+            id: "S26D 020", 
+            name: "Meeting Patti (TOPI)", 
+            weights: { "16ft": 1.400 } 
+        },
+    ]
+},
+
+      {
+      id: 'domal_26 sliding window_3t',
+      name: '3 Track Sliding Window',
+      desc: '26MM DOMAL 3-track sliding window system ( <strong> select 16ft </strong> )',
+      img: 'assets/images/3 track standard window.png',
+      recipe: [
+        { 
+            id: "S26D 003", 
+            name: "26MM D 3 Track Frame", 
+            weights: { "16ft":[4.600, 5.200, 6.600] } 
+        },
+        { 
+            id: "S26D 004", 
+            name: "26MM D 3 Track + Cover", 
+            weights: { "16ft": 6.400 } 
+        },
+        { 
+            id: "S26D 005", 
+            name: "26MM D 3 Track (PLAIN)", 
+            weights: { 
+                "16ft": 5.500
+            } 
+        },
+         { 
+            id: "S26D 008", 
+            name: "26MM D 3 Track + Grill", 
+            weights: { "16ft": [6.900, 7.800] } 
+        },
+        { 
+            id: "S26D 009", 
+            name: "26MM D 3IN1 Frame", 
+            weights: { "16ft": 5.800 } 
+        },
+        { 
+            id: "S26D 010", 
+            name: "26MM D Shutter", 
+            weights: { 
+                "16ft": [2.500, 2.650, 2.900, 3.250 ,3.400 ,3.850 ,4.050 ]
+            } 
+        },
+        { 
+            id: "S26D 011", 
+            name: "26MM EURO Shutter", 
+           weights: { "16ft": [ 3.100, 3.550] }  
+        },
+        { 
+            id: "S26D 012", 
+            name: "26×60 D Shutter", 
+            weights: { "16ft": 2.800 } 
+        },
+         { 
+            id: "S26D 013", 
+            name: "27MM DGU Shutter", 
+            weights: { "16ft": 3.700 } 
+        },
+         { 
+            id: "S26D 014", 
+            name: "27MM EURO DGU Shutter", 
+            weights: { "16ft": 3.850 } 
+        },
+         { 
+            id: "S26D 015", 
+            name: "Interlock 26MM", 
+            weights: { "16ft": 1.250 } 
+        },
+         { 
+            id: "S26D 016", 
+            name: "26MM Slim Interlock", 
+            weights: { "16ft": 2.600 } 
+        },
+         { 
+            id: "S26D 017", 
+            name: "26MM KPA Interlock", 
+            weights: { "16ft": 4.300 } 
+        },
+         { 
+            id: "S26D 018", 
+            name: "27MM DGU Interlock", 
+            weights: { "16ft": 2.400 } 
+        },
+         { 
+            id: "S26D 019", 
+            name: "27MM DGU KPA Interlock", 
+            weights: { "16ft": 4.300 } 
+        },
+         { 
+            id: "S26D 020", 
+            name: "Meeting Patti (TOPI)", 
+            weights: { "16ft": 1.400 } 
+        },
+    ]
+},
+
+ {
+      id: 'domal_26 sliding window_4t',
+      name: '4 Track Sliding Window',
+      desc: '26MM DOMAL 4-track sliding window system ( <strong> select 16ft </strong> )',
+      img: 'assets/images/4 track standard window.png',
+      recipe: [
+        { 
+            id: "S26D 006", 
+            name: "26MM D 4 Track Frame", 
+            weights: { "16ft":[8.000] } 
+        },
+        { 
+            id: "S26D 010", 
+            name: "26MM D Shutter", 
+            weights: { 
+                "16ft": [2.500, 2.650, 2.900, 3.250 ,3.400 ,3.850 ,4.050 ]
+            } 
+        },
+        { 
+            id: "S26D 011", 
+            name: "26MM EURO Shutter", 
+           weights: { "16ft": [ 3.100, 3.550] }  
+        },
+        { 
+            id: "S26D 012", 
+            name: "26×60 D Shutter", 
+            weights: { "16ft": 2.800 } 
+        },
+         { 
+            id: "S26D 013", 
+            name: "27MM DGU Shutter", 
+            weights: { "16ft": 3.700 } 
+        },
+         { 
+            id: "S26D 014", 
+            name: "27MM EURO DGU Shutter", 
+            weights: { "16ft": 3.850 } 
+        },
+         { 
+            id: "S26D 015", 
+            name: "Interlock 26MM", 
+            weights: { "16ft": 1.250 } 
+        },
+         { 
+            id: "S26D 016", 
+            name: "26MM Slim Interlock", 
+            weights: { "16ft": 2.600 } 
+        },
+         { 
+            id: "S26D 017", 
+            name: "26MM KPA Interlock", 
+            weights: { "16ft": 4.300 } 
+        },
+         { 
+            id: "S26D 018", 
+            name: "27MM DGU Interlock", 
+            weights: { "16ft": 2.400 } 
+        },
+         { 
+            id: "S26D 019", 
+            name: "27MM DGU KPA Interlock", 
+            weights: { "16ft": 4.300 } 
+        },
+         { 
+            id: "S26D 020", 
+            name: "Meeting Patti (TOPI)", 
+            weights: { "16ft": 1.400 } 
+        },
+    ]
+},
+],
+
+//--- R40 ---//
+
+r40_openable: [
+    {
+      id: 'r40_openable window',
+      name: 'R40 Casement (Openable) window',
+      desc: 'R40 Casement window system ( <strong> select 16ft </strong> )',
+      img: 'assets/images/Openable (Casement) window.png',
+      recipe: [
+        { id: "SR40 001", name: "R40 Single Frame", weights: { "16ft": [2.400, 2.800, 3.150] } },
+      { id: "SR40 002", name: "R40 Single Frame (Light Weight)", weights: { "16ft": 2.000 } },
+      { id: "SR40 003", name: "R40 2 In 1 Frame", weights: { "16ft": [3.850, 4.500, 5.900] } },
+      { id: "SR40 004", name: "R40 3 In 1 Frame", weights: { "16ft": [5.600, 6.100, 7.500] } },
+
+      { id: "SR40 005", name: "R40 Shutter 51MM", weights: { "16ft": [2.900, 3.150, 3.500] } },
+      { id: "SR40 006", name: "R40 Shutter 65MM", weights: { "16ft": [3.100, 3.400, 4.500] } },
+      { id: "SR40 007", name: "R40 Molding Shutter", weights: { "16ft": 3.350 } },
+      { id: "SR40 008", name: "R40 Profile Shutter", weights: { "16ft": 3.350 } },
+      { id: "SR40 009", name: "R40 Molding Groove Shutter", weights: { "16ft": 3.200 } },
+      { id: "SR40 010", name: "R40 DGU Shutter", weights: { "16ft": 3.700 } },
+
+      { id: "SR40 011", name: "R40 SGU Clip", weights: { "16ft": 1.000 } },
+      { id: "SR40 012", name: "R40 Laminate Clip", weights: { "16ft": 0.900 } },
+      { id: "SR40 013", name: "R40 DGU Clip", weights: { "16ft": 1.400 } },
+
+      { id: "SR40 014", name: "R40 Single Mullion 71MM", weights: { "16ft": 4.000 } },
+      { id: "SR40 015", name: "R40 2 In 1 Mullion", weights: { "16ft": 5.600 } },
+      { id: "SR40 016", name: "R40 3 In 1 Mullion", weights: { "16ft": 5.400 } },
+
+      { id: "SR40 017", name: "R40 Fly Mullion", weights: { "16ft": 3.100 } },
+      { id: "SR40 018", name: "R40 Small Mullion", weights: { "16ft": 3.100 } },
+      { id: "SR40 019", name: "R40 Small Mullion With Groove", weights: { "16ft": 3.450 } },
+      { id: "SR40 020", name: "R40 Big Mullion", weights: { "16ft": 3.800 } },
+
+      { id: "SR40 021", name: "R40 Reverse Adapter", weights: { "16ft": 1.500 } },
+      { id: "SR40 022", name: "R40 Mosquito Shutter 23×50", weights: { "16ft": 2.300 } 
+        },
+    ]
+},
+
+{
+      id: 'r40_openable door',
+      name: 'R40 Casement (Openable) Door',
+      desc: 'R40 Casement door system ( <strong> select 16ft </strong> )',
+      img: 'assets/images/Casement door.png',
+      recipe: [
+        { id: "SR40 001", name: "R40 Single Frame", weights: { "16ft": [2.400, 2.800, 3.150] } },
+      { id: "SR40 002", name: "R40 Single Frame (Light Weight)", weights: { "16ft": 2.000 } },
+      { id: "SR40 003", name: "R40 2 In 1 Frame", weights: { "16ft": [3.850, 4.500, 5.900] } },
+      { id: "SR40 004", name: "R40 3 In 1 Frame", weights: { "16ft": [5.600, 6.100, 7.500] } },
+
+      { id: "SR40 005", name: "R40 Shutter 51MM", weights: { "16ft": [2.900, 3.150, 3.500] } },
+      { id: "SR40 006", name: "R40 Shutter 65MM", weights: { "16ft": [3.100, 3.400, 4.500] } },
+      { id: "SR40 007", name: "R40 Molding Shutter", weights: { "16ft": 3.350 } },
+      { id: "SR40 008", name: "R40 Profile Shutter", weights: { "16ft": 3.350 } },
+      { id: "SR40 009", name: "R40 Molding Groove Shutter", weights: { "16ft": 3.200 } },
+      { id: "SR40 010", name: "R40 DGU Shutter", weights: { "16ft": 3.700 } },
+
+      { id: "SR40 011", name: "R40 SGU Clip", weights: { "16ft": 1.000 } },
+      { id: "SR40 012", name: "R40 Laminate Clip", weights: { "16ft": 0.900 } },
+      { id: "SR40 013", name: "R40 DGU Clip", weights: { "16ft": 1.400 } },
+
+      { id: "SR40 014", name: "R40 Single Mullion 71MM", weights: { "16ft": 4.000 } },
+      { id: "SR40 015", name: "R40 2 In 1 Mullion", weights: { "16ft": 5.600 } },
+      { id: "SR40 016", name: "R40 3 In 1 Mullion", weights: { "16ft": 5.400 } },
+
+      { id: "SR40 017", name: "R40 Fly Mullion", weights: { "16ft": 3.100 } },
+      { id: "SR40 018", name: "R40 Small Mullion", weights: { "16ft": 3.100 } },
+      { id: "SR40 019", name: "R40 Small Mullion With Groove", weights: { "16ft": 3.450 } },
+      { id: "SR40 020", name: "R40 Big Mullion", weights: { "16ft": 3.800 } },
+
+      { id: "SR40 021", name: "R40 Reverse Adapter", weights: { "16ft": 1.500 } },
+      { id: "SR40 022", name: "R40 Mosquito Shutter 23×50", weights: { "16ft": 2.300 } 
+        },
+    ]
+},
+],
+
+
+//--- R50 ---//
+
+r50_openable: [
+    {
+      id: 'r50_openable window',
+      name: 'R50 Casement (Openable) window',
+      desc: 'R50 Casement window system ( <strong> select 16ft </strong> )',
+      img: 'assets/images/Openable (Casement) window.png',
+      recipe: [
+      { id: "SR50 001", name: "R50 Window Frame", weights: { "16ft": 3.700 } },
+      { id: "SR50 002", name: "R50 Door Frame", weights: { "16ft": 5.200 } },
+      { id: "SR50 003", name: "R50 Window 2 In 1 Frame", weights: { "16ft": 5.000 } },
+
+      { id: "SR50 004", name: "R50 Window Mullion", weights: { "16ft": 5.200 } },
+      { id: "SR50 005", name: "R50 Door Mullion", weights: { "16ft": 6.000 } },
+
+      { id: "SR50 006", name: "R50 Window Shutter", weights: { "16ft": 5.000 } },
+      { id: "SR50 007", name: "R50 Inside Opening Shutter", weights: { "16ft": 6.700 } },
+      { id: "SR50 008", name: "R50 Outside Opening Shutter", weights: { "16ft": 6.700 } },
+
+      { id: "SR50 009", name: "R50 SGU Clip", weights: { "16ft": 1.650 } },
+      { id: "SR50 010", name: "R50 DGU Clip", weights: { "16ft": 1.400 } },
+
+      { id: "SR50 011", name: "R50 Fly Mullion", weights: { "16ft": 3.500 } },
+      { id: "SR50 012", name: "R50 Bottom Adapter", weights: { "16ft": 3.000 } },
+
+      { id: "SR50 013", name: "R50 Multi Lock Patti (<strong>This is available in 12ft only</strong>)", weights: { "16ft": 0.500 } },
+    ]
+},
+
+{
+      id: 'r50_openable door',
+      name: 'R50 Casement (Openable) Door',
+      desc: 'R50 Casement door system ( <strong> select 16ft </strong> )',
+      img: 'assets/images/Casement door.png',
+      recipe: [
+      { id: "SR50 001", name: "R50 Window Frame", weights: { "16ft": 3.700 } },
+      { id: "SR50 002", name: "R50 Door Frame", weights: { "16ft": 5.200 } },
+      { id: "SR50 003", name: "R50 Window 2 In 1 Frame", weights: { "16ft": 5.000 } },
+
+      { id: "SR50 004", name: "R50 Window Mullion", weights: { "16ft": 5.200 } },
+      { id: "SR50 005", name: "R50 Door Mullion", weights: { "16ft": 6.000 } },
+
+      { id: "SR50 006", name: "R50 Window Shutter", weights: { "16ft": 5.000 } },
+      { id: "SR50 007", name: "R50 Inside Opening Shutter", weights: { "16ft": 6.700 } },
+      { id: "SR50 008", name: "R50 Outside Opening Shutter", weights: { "16ft": 6.700 } },
+
+      { id: "SR50 009", name: "R50 SGU Clip", weights: { "16ft": 1.650 } },
+      { id: "SR50 010", name: "R50 DGU Clip", weights: { "16ft": 1.400 } },
+
+      { id: "SR50 011", name: "R50 Fly Mullion", weights: { "16ft": 3.500 } },
+      { id: "SR50 012", name: "R50 Bottom Adapter", weights: { "16ft": 3.000 } },
+
+      { id: "SR50 013", name: "R50 Multi Lock Patti (<strong>This is available in 12ft only</strong>)", weights: { "16ft": 0.500 } },
+    ]
+}
+
+],
+
+//--- VENTANA 29MM ---//
+
+ventana_29: [
+  {
+    id: "ventana_29mm_2t",
+    name: "29MM Ventana 2 Track Sliding Window",
+    desc: "29MM Ventana 2 Track System ( <strong>16ft only</strong> )",
+    img: "assets/images/29mm-ventana-2track.png",
+    recipe: [
+
+      { id: "S29V 001", name: "29MM 2 Track + Cover (Plain)", weights: { "16ft": 5.700 } },
+      { id: "S29V 002", name: "29MM 2 Track + Cover", weights: { "16ft": 5.900 } },
+      { id: "S29V 003", name: "29MM 2 Track (Regular)", weights: { "16ft": 5.300 } },
+      { id: "S29V 004", name: "29MM 2 Track (One Side Open)", weights: { "16ft": 5.300 } },
+
+      { id: "S29V 009", name: "29MM 2 Track + Grill", weights: { "16ft": 7.000 } },
+
+      { id: "S29V 012", name: "29MM Shutter", weights: { "16ft": 4.400 } },
+      { id: "S29V 013", name: "29MM Square Shutter", weights: { "16ft": 3.700 } },
+      { id: "S29V 014", name: "29MM DGU Shutter", weights: { "16ft": 3.800 } },
+
+      { id: "S29V 015", name: "29MM Interlock", weights: { "16ft": 1.650 } },
+      { id: "S29V 016", name: "29MM Slim Interlock", weights: { "16ft": 3.250 } },
+
+      { id: "S29V 020", name: "29MM Track Cap (V)", weights: { "16ft": 0.800 } },
+      { id: "S29V 021", name: "29MM Track Cap (O)", weights: { "16ft": 0.860 } },
+
+      { id: "S29V 022", name: "29MM Meeting Patti", weights: { "16ft": 1.800 } },
+      { id: "S29V 023", name: "29MM H Adapter", weights: { "16ft": 0.550 } },    
+
+    ]
+  },
+
+  {
+    id: "ventana_29mm_3t",
+    name: "29MM Ventana 3 Track Sliding Window",
+    desc: "29MM Ventana 3 Track System ( <strong>16ft only</strong> )",
+    img: "assets/images/29mm-ventana-3track.png",
+    recipe: [
+
+      { id: "S29V 005", name: "29MM 3 Track + Cover (Plain)", weights: { "16ft": 8.400 } },
+      { id: "S29V 006", name: "29MM 3 Track + Cover", weights: { "16ft": 9.200 } },
+      { id: "S29V 007", name: "29MM 3 Track (Regular)", weights: { "16ft": 7.800 } },
+      { id: "S29V 008", name: "29MM 3 Track (One Side Open)", weights: { "16ft": 7.800 } },
+
+      { id: "S29V 011", name: "29MM 3 Track + Grill (Jindal)", weights: { "16ft": 10.100 } },
+
+      { id: "S29V 012", name: "29MM Shutter", weights: { "16ft": 4.400 } },
+      { id: "S29V 013", name: "29MM Square Shutter", weights: { "16ft": 3.700 } },
+      { id: "S29V 014", name: "29MM DGU Shutter", weights: { "16ft": 3.800 } },
+
+      { id: "S29V 017", name: "29MM KPA Interlock", weights: { "16ft": 5.000 } },
+      { id: "S29V 018", name: "29MM DGU Interlock", weights: { "16ft": 2.600 } },
+      { id: "S29V 019", name: "29MM DGU KPA Interlock", weights: { "16ft": 4.500 } },
+
+      { id: "S29V 020", name: "29MM Track Cap (V)", weights: { "16ft": 0.800 } },
+      { id: "S29V 021", name: "29MM Track Cap (O)", weights: { "16ft": 0.860 } },
+
+      { id: "S29V 022", name: "29MM Meeting Patti", weights: { "16ft": 1.800 } },
+      { id: "S29V 023", name: "29MM H Adapter", weights: { "16ft": 0.550 } },
+      { id: "S29V 024", name: "29MM Middle Section", weights: { "16ft": 3.250 } },
+
+    ]
+  },
+
+  {
+    id: "ventana_29mm_ss",
+    name: "29MM Ventana Special Systems",
+    desc: "29MM Ventana Special & Hybrid Configurations ( <strong>16ft only</strong> )",
+    img: "assets/images/29mm-ventana-special.png",
+    recipe: [
+
+      { id: "S29V 010", name: "29MM 3 In 1 Frame", weights: { "16ft": 7.300 } },
+
+      { id: "S29V 011", name: "29MM 3 Track + Grill (Jindal)", weights: { "16ft": 10.100 } },
+      { id: "S29V 009", name: "29MM 2 Track + Grill", weights: { "16ft": 7.000 } },
+
+      { id: "S29V 014", name: "29MM DGU Shutter", weights: { "16ft": 3.800 } },
+      { id: "S29V 018", name: "29MM DGU Interlock", weights: { "16ft": 2.600 } },
+      { id: "S29V 019", name: "29MM DGU KPA Interlock", weights: { "16ft": 4.500 } },
+
+  ]
+  }
+],
+
+
+
+//--- GULF 29MM ---//
+
+gulf_29: [
+  {
+    id: "gulf_29mm_2track_window",
+    name: "29MM Gulf 2 Track Sliding Window",
+    desc: "29MM Gulf Series – 2 Track System ( <strong>16ft only</strong> )",
+    img: "assets/images/2 track sliding window.png",
+    recipe: [
+
+      { id: "S29G 001", name: "29MM Gulf 2 Track Bottom", weights: { "16ft": 5.300 } },
+      { id: "S29G 002", name: "29MM Gulf 2 Track Vertical", weights: { "16ft": 3.700 } },
+      
+      { id: "S29G 007", name: "29MM Gulf Top-Bottom Section", weights: { "16ft": 4.400 } },
+      { id: "S29G 005", name: "29MM Gulf Track Adapter", weights: { "16ft": 0.750 } },
+      { id: "S29G 006", name: "29MM Gulf Top Adapter", weights: { "16ft": 0.750 } }
+
+    ]
+  },
+
+  {
+    id: "gulf_29mm_3track_window",
+    name: "29MM Gulf 3 Track Sliding Window",
+    desc: "29MM Gulf Series – 3 Track System ( <strong>16ft only</strong> )",
+    img: "assets/images/3 track standard window.png",
+    recipe: [
+
+      { id: "S29G 003", name: "29MM Gulf 3 Track Bottom", weights: { "16ft": 7.800 } },
+      { id: "S29G 004", name: "29MM Gulf 3 Track Vertical", weights: { "16ft": 5.150 } },
+
+      { id: "S29G 007", name: "29MM Gulf Top-Bottom Section", weights: { "16ft": 4.400 } },
+      { id: "S29G 005", name: "29MM Gulf Track Adapter", weights: { "16ft": 0.750 } },
+      { id: "S29G 006", name: "29MM Gulf Top Adapter", weights: { "16ft": 0.750 } }
+
+    ]
+  },
+],
+
+
+//--- gulf_35x59 ---//
+
+gulf_35x59: [
+  {
+    id: "gulf_35x59_2track_window",
+    name: "35×59 Gulf 2 Track Sliding Window",
+    desc: "35×59 Gulf Series – 2 Track System ( <strong>16ft only</strong> )",
+    img: "assets/images/2 track sliding window.png",
+    recipe: [
+
+      { id: "S35G 001", name: "35×59 Gulf 2 Track Bottom", weights: { "16ft": 8.250 } },
+      { id: "S35G 002", name: "35×59 Gulf 2 Track Vertical", weights: { "16ft": 6.100 } },
+
+      { id: "S35G 011", name: "35×59 Gulf Track Adapter", weights: { "16ft": 1.100 } },
+      { id: "S35G 010", name: "35×59 Gulf SGU Adapter", weights: { "16ft": 1.100 } },
+
+      { id: "S35G 005", name: "35×59 Gulf Slim Interlock", weights: { "16ft": 2.900 } },
+      { id: "S35G 006", name: "35×59 Gulf Slim KPA Interlock", weights: { "16ft": 4.200 } },
+
+      { id: "S35G 007", name: "35×59 Gulf Shutter", weights: { "16ft": 4.200 } },
+      { id: "S35G 009", name: "35×59 Gulf Mesh Shutter", weights: { "16ft": 1.150 } },
+
+      { id: "S35G 008", name: "35×59 Gulf Top-Bottom Section", weights: { "16ft": 4.400 } },
+
+      { id: "S35G 012", name: "35×59 Gulf Track Cap (U)", weights: { "16ft": 0.900 } },
+      { id: "S35G 013", name: "35×59 Gulf Track Cap (V)", weights: { "16ft": 0.900 } },
+
+      { id: "S35G 014", name: "35×59 Gulf Meeting Section", weights: { "16ft": 2.300 } }
+
+    ]
+  },
+
+  {
+    id: "gulf_35x59_3track_window",
+    name: "35×59 Gulf 3 Track Sliding Window",
+    desc: "35×59 Gulf Series – 3 Track System ( <strong>16ft only</strong> )",
+    img: "assets/images/3 track standard window.png",
+    recipe: [
+
+      { id: "S35G 003", name: "35×59 Gulf 3 Track Bottom", weights: { "16ft": 9.800 } },
+      { id: "S35G 004", name: "35×59 Gulf 3 Track Vertical", weights: { "16ft": 7.250 } },
+
+      { id: "S35G 011", name: "35×59 Gulf Track Adapter", weights: { "16ft": 1.100 } },
+      { id: "S35G 010", name: "35×59 Gulf SGU Adapter", weights: { "16ft": 1.100 } },
+
+      { id: "S35G 005", name: "35×59 Gulf Slim Interlock", weights: { "16ft": 2.900 } },
+      { id: "S35G 006", name: "35×59 Gulf Slim KPA Interlock", weights: { "16ft": 4.200 } },
+
+      { id: "S35G 007", name: "35×59 Gulf Shutter", weights: { "16ft": 4.200 } },
+      { id: "S35G 009", name: "35×59 Gulf Mesh Shutter", weights: { "16ft": 1.150 } },
+
+      { id: "S35G 008", name: "35×59 Gulf Top-Bottom Section", weights: { "16ft": 4.400 } },
+
+      { id: "S35G 012", name: "35×59 Gulf Track Cap (U)", weights: { "16ft": 0.900 } },
+      { id: "S35G 013", name: "35×59 Gulf Track Cap (V)", weights: { "16ft": 0.900 } },
+
+      { id: "S35G 014", name: "35×59 Gulf Meeting Section", weights: { "16ft": 2.300 } }
+
+    ]
+  },
+],
+
+
+//--- sliding mosquito ---//
+
+sliding_mosquito: [
+  {
+    id: "sliding_mosquito_section",
+    name: "Sliding Mosquito Profiles",
+    desc: "Profiles for integrating the insect protection Sliding system( <strong>16ft only</strong> )",
+    img: "assets/images/2 track sliding window.png",
+    recipe: [
+
+      { id: "SSMO 001", name: "Sliding Net Handle", weights: { "16ft": 2.200 } },
+      { id: "SSMO 002", name: "Sliding Net Verticle", weights: { "16ft": 1.300 } },
+      { id: "SSMO 003", name: "Sliding Net Top Bottom", weights: { "16ft": 1.650 } },
+
+    ]
+  },
+],
+
+//--- roller mosquito ---//
+
+roller_mosquito: [
+  {
+    id: "roller_mosquito_section",
+    name: "Roller Mosquito Profiles",
+    desc: "Profiles for integrating the insect protection Roller system( <strong>15ft only</strong> )",
+    img: "assets/images/2 track sliding window.png",
+    recipe: [
+
+      { id: "SRMN 001", name: "Roller Net Handle", weights: { "15ft": 1.200 } },
+      { id: "SRMN 002", name: "Roller Net Verticle", weights: { "15ft": 1.150 } },
+      { id: "SRMN 003", name: "Roller Net Top", weights: { "15ft": 2.100 } },
+
+    ]
+  },
+],
+
+//--- angle + t. patti + mosquito channel ---//
+
+angle_t_patti: [
+  {
+    id: "angle + t. patti + mosquito channel",
+    name: "Auxillary System Profiles",
+    desc: "Necessary profiles items for making Working Aluminium System( <strong>15ft only</strong> )",
+    img: "assets/images/2 track sliding window.png",
+    recipe: [
+
+      { id: "SAN 001", name: "19 x 19 Angle", weights: { "12ft": 0.700 } },
+      { id: "SAN 002", name: "Roller Net Verticle", weights: { "15ft": 1.150 } },
+      { id: "SAN 003", name: "Roller Net Top", weights: { "15ft": 2.100 } },
+      { id: "SAN 004", name: "19 x 19 Angle", weights: { "12ft": 0.700 } },
+      { id: "SAN 005", name: "Roller Net Verticle", weights: { "15ft": 1.150 } },
+      { id: "SAN 006", name: "Roller Net Top", weights: { "15ft": 2.100 } },
+      { id: "Stp 007", name: "19 x 19 Angle", weights: { "12ft": 0.700 } },
+      { id: "STP 008", name: "Roller Net Verticle", weights: { "15ft": 1.150 } },
+      { id: "SUC 009", name: "Roller Net Top", weights: { "15ft": 2.100 } },
+      { id: "SUC 010", name: "19 x 19 Angle", weights: { "12ft": 0.700 } },
+      { id: "SUC 011", name: "Roller Net Verticle", weights: { "15ft": 1.150 } },
+      { id: "SUC 012", name: "Roller Net Top", weights: { "15ft": 2.100 } },
+      { id: "SUC 013", name: "19 x 19 Angle", weights: { "12ft": 0.700 } },
+      { id: "SUC 014", name: "Roller Net Verticle", weights: { "15ft": 1.150 } },
+      { id: "SAN 015", name: "Roller Net Top", weights: { "15ft": 2.100 } },
+      { id: "SAN 016", name: "19 x 19 Angle", weights: { "12ft": 0.700 } },
+      { id: "SAN 017", name: "Roller Net Verticle", weights: { "15ft": 1.150 } },
+      { id: "SAN 018", name: "Roller Net Top", weights: { "15ft": 2.100 } },
+      { id: "SAN 001", name: "19 x 19 Angle", weights: { "12ft": 0.700 } },
+      { id: "SAN 002", name: "Roller Net Verticle", weights: { "15ft": 1.150 } },
+      { id: "SAN 003", name: "Roller Net Top", weights: { "15ft": 2.100 } },
+      { id: "SAN 001", name: "19 x 19 Angle", weights: { "12ft": 0.700 } },
+      { id: "SAN 002", name: "Roller Net Verticle", weights: { "15ft": 1.150 } },
+      { id: "SAN 003", name: "Roller Net Top", weights: { "15ft": 2.100 } },
+
+
+    ]
+  },
+],
+
+
+
+
+}
+        
+    
+
+
+    // --- 2. APP STATE ---
+    let state = {
+        step: 1,
+        selectedSeries: null,
+        selectedProduct: null,
+        cart: []
+    };
+
+    // --- 3. RENDER LOGIC ---
+
+    function init() {
+        renderSeries();
+        updateColors(); // Init finish colors
+    }
+
+    // STEP 1: Render Series
+    function renderSeries() {
+    const grid = document.getElementById('seriesGrid');
+
+    grid.innerHTML = SERIES_DB.map(s => `
+        <div class="selection-card" onclick="selectSeries('${s.id}')">
+            <div class="card-img-box">
+                ${
+                    s.img
+                    ? `<img src="${s.img}" alt="${s.name}">`
+                    : `<i class="fas fa-layer-group fa-3x"></i>`
+                }
+            </div>
+            <div class="card-body">
+                <div class="card-title">${s.name}</div>
+                <div class="card-desc">${s.desc}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+
+    // STEP 2: Render Products
+    function selectSeries(seriesId) {
+        state.selectedSeries = SERIES_DB.find(s => s.id === seriesId);
+        
+        // Check if we have products for this series
+        if(!PRODUCT_DB[seriesId]) {
+            alert("No products added for this series in this demo yet!");
+            return;
+        }
+
+        state.step = 2;
+        updateView();
+
+        document.getElementById('lblSelectedSeries').innerText = state.selectedSeries.name;
+        
+        const grid = document.getElementById('productGrid');
+        const products = PRODUCT_DB[seriesId];
+
+        grid.innerHTML = products.map(p => `
+    <div class="selection-card" onclick="selectProduct('${p.id}')">
+        <div class="card-img-box">
+            ${
+                p.img
+                ? `<img src="${p.img}" alt="${p.name}">`
+                : `<i class="fas fa-window-maximize fa-3x"></i>`
+            }
+        </div>
+        <div class="card-body">
+            <div class="card-title">${p.name}</div>
+            <div class="card-desc">${p.desc}</div>
+        </div>
+    </div>
+`).join('');
+    }  
+
+    // STEP 3: Configure
+   function selectProduct(prodId) {
+    state.selectedProduct = PRODUCT_DB[state.selectedSeries.id].find(p => p.id === prodId);
+    state.step = 3;
+    updateView();
+
+    // 🔥 NEW: show selected product image
+    const imgEl = document.getElementById('configProductImg');
+    if (imgEl) {
+        imgEl.src = state.selectedProduct.img || '';
+        imgEl.style.display = state.selectedProduct.img ? 'block' : 'none';
+    }
+
+    // Reset size selector (DEFAULT = 16ft)
+       document.getElementById('sizeSelector').value = '16ft';
+       renderBOM();
+
+}
+
+
+
+    // Render BOM with Dynamic Weights based on Size
+   function renderBOM() {
+    const list = document.getElementById('bomList');
+    const currentSize = document.getElementById('sizeSelector').value;
+    
+    list.innerHTML = state.selectedProduct.recipe.map((comp, idx) => {
+        // Get weight data for the selected size
+        let weightData = comp.weights[currentSize];
+        
+        let displayHtml = '';
+        let weightClass = '';
+        let checkedState = 'checked';
+
+        if (weightData === undefined) {
+            // Case 1: No weight available for this size
+            displayHtml = 'N/A';
+            weightClass = 'missing';
+            checkedState = ''; // Uncheck by default if unavailable
+        } else if (Array.isArray(weightData)) {
+            // Case 2: Multiple weights available (Render Dropdown)
+            // We give the select a specific ID so we can grab the value later
+            let options = weightData.map(w => `<option value="${w}">${w.toFixed(3)} kg</option>`).join('');
+            displayHtml = `
+                <select id="weight_select_${idx}" class="form-control" style="padding:2px; font-size:0.8rem; height:auto; width:auto; display:inline-block;">
+                    ${options}
+                </select>
+            `;
+        } else {
+            // Case 3: Single weight available (Render Text)
+            // We verify it's a number
+            displayHtml = `${parseFloat(weightData).toFixed(3)} kg`;
+            // Add a hidden input so logic is consistent for single or multi values
+            displayHtml += `<input type="hidden" id="weight_select_${idx}" value="${weightData}">`;
+        }
+
+        return `
+<div class="bom-item">
+    <input 
+        type="checkbox" 
+        class="bom-checkbox" 
+        id="comp_${idx}" 
+        ${checkedState} 
+        data-idx="${idx}"
+    >
+
+    <div class="bom-details">
+        <div style="font-weight:600;">${comp.name}</div>
+        <div style="font-size:0.8rem; color:#666;">Die: ${comp.id}</div>
+    </div>
+
+    <div style="display:flex; gap:10px; align-items:center;">
+        <!-- WEIGHT -->
+        <div class="bom-weight ${weightClass}">
+            ${displayHtml}
+        </div>
+
+        <!-- COMPONENT QUANTITY -->
+        <input 
+            type="number" 
+            id="qty_${idx}"
+            min="1"
+            value="1"
+            style="
+                width:60px;
+                padding:4px;
+                font-size:0.8rem;
+                text-align:center;
+            "
+        >
+    </div>
+</div>
+`;
+
+    }).join('');
+}
+    // NAVIGATION
+    function updateView() {
+        // Hide all
+        document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.step-dot').forEach(el => el.classList.remove('active'));
+
+        // Show current
+        if(state.step === 1) {
+            document.getElementById('view-series').classList.add('active');
+            document.getElementById('globalBackBtn').style.display = 'none';
+        } else if (state.step === 2) {
+            document.getElementById('view-products').classList.add('active');
+            document.getElementById('globalBackBtn').style.display = 'inline-flex';
+        } else if (state.step === 3) {
+            document.getElementById('view-config').classList.add('active');
+            document.getElementById('globalBackBtn').style.display = 'inline-flex';
+        }
+
+        // Update dots
+        for(let i=1; i<=state.step; i++) {
+            const dot = document.getElementById(`dot${i}`);
+            if(dot) dot.classList.add('active');
+        }
+
+        window.scrollTo(0,0);
+    }
+
+    function goBack() {
+        if(state.step > 1) {
+            state.step--;
+            updateView();
+        }
+    }
+
+    // --- 4. FINISH & COLOR LOGIC ---
+    function updateColors() {
+        const type = document.getElementById('finishType').value;
+        const grid = document.getElementById('colorGrid');
+        const options = FINISH_DB[type];
+
+        grid.innerHTML = options.map((c, i) => `
+            <div class="color-option ${i===0?'selected':''}" 
+                 style="background-color:${c.hex}; ${c.border ? 'border:1px solid '+c.border : ''}"
+                 title="${c.name}"
+                 onclick="selectColor(this, '${c.name}')">
+            </div>
+        `).join('');
+        
+        // Set default
+        document.getElementById('selectedColorName').value = options[0].name;
+    }
+
+    function selectColor(el, name) {
+        document.querySelectorAll('.color-option').forEach(d => d.classList.remove('selected'));
+        el.classList.add('selected');
+        document.getElementById('selectedColorName').value = name;
+    }
+
+    // --- 5. CART LOGIC ---
+   function addItemToCart() {
+   
+    const finishType = document.getElementById('finishType').value;
+    const colorName = document.getElementById('selectedColorName').value;
+    const selectedSize = document.getElementById('sizeSelector').value;
+
+    // Gather checked components
+    const checkboxes = document.querySelectorAll('.bom-checkbox:checked');
+    let selectedComponents = [];
+    let itemTotalWeight = 0;
+
+    checkboxes.forEach(cb => {
+        const idx = cb.getAttribute('data-idx');
+        const comp = state.selectedProduct.recipe[idx];
+        
+        // OLD WAY: const weightForSize = comp.weights[selectedSize];
+        
+        // NEW WAY: Get value from the specific input/select for this row
+        const weightInput = document.getElementById(`weight_select_${idx}`);
+const qtyInput = document.getElementById(`qty_${idx}`);
+
+if (weightInput && qtyInput) {
+    const selectedWeight = parseFloat(weightInput.value);
+    const componentQty = parseInt(qtyInput.value) || 1;
+
+    if (selectedWeight > 0 && componentQty > 0) {
+        const componentTotalWeight = selectedWeight * componentQty;
+
+        selectedComponents.push({
+            name: comp.name,
+            die: comp.id,
+            unitWeight: selectedWeight,
+            qty: componentQty,
+            totalWeight: componentTotalWeight
+        });
+
+        itemTotalWeight += componentTotalWeight;
+    }
+}
+
+    });
+
+    if(selectedComponents.length === 0) {
+        alert("No valid components selected (or weights are missing).");
+        return;
+    }
+
+    // Add to state cart
+    state.cart.push({
+    seriesName: state.selectedSeries.name,
+    productName: state.selectedProduct.name,
+    size: selectedSize,
+    finish: `${finishType.toUpperCase()} - ${colorName}`,
+    totalWeight: itemTotalWeight,
+    components: selectedComponents
+});
+
+
+    renderCart();
+    state.step = 2; 
+    updateView();
+    
+    // Mobile UX
+    if(window.innerWidth < 1024) {
+        document.getElementById('cartPanel').classList.add('open');
+        setTimeout(() => { document.getElementById('cartPanel').classList.remove('open'); }, 2000);
+    }
+}
+
+    function renderCart() {
+        const container = document.getElementById('cartItemsContainer');
+        const rate = parseFloat(document.getElementById('baseRate').value) || 0;
+        const rateWithGst = rate * 1.18;
+
+        let grandWeight = 0;
+
+        container.innerHTML = state.cart.map((item, idx) => {
+            grandWeight += item.totalWeight;
+            return `
+                <div class="cart-item">
+                    <button class="cart-remove" onclick="removeCartItem(${idx})"><i class="fas fa-trash"></i></button>
+                    <h4>${item.productName}</h4>
+                    <p><strong>${item.seriesName}</strong></p>
+                    <p>Size: <span style="color:var(--primary); font-weight:bold;">${item.size}</span></p>
+                    <p>Finish: ${item.finish}</p>
+                    <p>Qty: ${item.qty} | Wt: ${item.totalWeight.toFixed(2)} kg</p>
+                </div>
+            `;
+        }).join('');
+
+        if(state.cart.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding: 40px; color:#aaa;"><i class="fas fa-box-open fa-3x"></i><br><br>Cart is empty</div>';
+        }
+
+        document.getElementById('cartTotalWeight').innerText = grandWeight.toFixed(2) + " kg";
+        document.getElementById('cartTotalCost').innerText = "₹" + (grandWeight * rateWithGst).toFixed(2);
+    }
+
+    function removeCartItem(idx) {
+        state.cart.splice(idx, 1);
+        renderCart();
+    }
+
+    function toggleCart() {
+        document.getElementById('cartPanel').classList.toggle('open');
+    }
+
+    // --- 6. PRINT QUOTATION ---
+    function generatePDF() {
+        if(state.cart.length === 0) { alert("Cart is empty!"); return; }
+
+        const rate = parseFloat(document.getElementById('baseRate').value) || 0;
+        const date = new Date().toLocaleDateString();
+        
+        let rows = "";
+        let totalWt = 0;
+
+        state.cart.forEach(item => {
+            totalWt += item.totalWeight;
+            rows += `
+                <tr style="background:#f9f9f9; font-weight:bold;">
+                    <td colspan="5" style="padding:10px; border-bottom:1px solid #ddd;">
+                        ${item.productName} <span style="color:#c01918;">[${item.size}]</span> <span style="font-weight:normal; font-size:12px;">(${item.finish})</span>
+                    </td>
+                </tr>
+            `;
+            // Detailed components per product
+            item.components.forEach(c => {
+                 rows += `
+                    <tr>
+                        <td style="padding:5px 10px; color:#666; padding-left:20px;">- ${c.name}</td>
+                        <td>${c.die}</td>
+                       <td style="text-align:center;">${c.qty}</td>
+                       <td style="text-align:right;">${c.unitWeight.toFixed(3)}</td>
+                       <td style="text-align:right;">${c.totalWeight.toFixed(3)}</td>
+
+                    </tr>
+                 `;
+            });
+        });
+
+        const rateWithGst = rate * 1.18;
+        const totalCost = totalWt * rateWithGst;
+
+        const printWin = window.open('', '', 'width=800,height=800');
+        printWin.document.write(`
+            <html>
+            <head>
+                <title>Khidkie Quotation</title>
+                <style>
+                    body { font-family: 'Helvetica', sans-serif; padding: 40px; color: #333; }
+                    .header { display: flex; justify-content: space-between; border-bottom: 2px solid #c01918; padding-bottom: 20px; margin-bottom: 30px; }
+                    .brand { font-size: 24px; font-weight: bold; color: #1d2762; }
+                    table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px; }
+                    th { text-align: left; background: #1d2762; color:white; padding: 10px; }
+                    td { border-bottom: 1px solid #eee; }
+                    .totals { text-align: right; margin-top: 20px; }
+                    .grand { font-size: 22px; color: #c01918; font-weight: bold; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div>
+                        <div class="brand">Khidkie™</div>
+                        <div>Fenestration Systems</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div>Date: ${date}</div>
+                        <div>Base Rate: ₹${rate.toFixed(2)}/kg</div>
+                    </div>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item / Component</th>
+                            <th>Die No</th>
+                            <th style="text-align:center;">Qty</th>
+                            <th style="text-align:right;">Unit Wt</th>
+                            <th style="text-align:right;">Total Wt</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows}
+                    </tbody>
+                </table>
+
+                <div class="totals">
+                    <div>Total Weight: <strong>${totalWt.toFixed(3)} kg</strong></div>
+                    <div>Rate (Incl 18% GST): <strong>₹${rateWithGst.toFixed(2)}</strong></div>
+                    <div class="grand">Total: ₹${totalCost.toFixed(2)}</div>
+                </div>
+            </body>
+            </html>
+        `);
+        printWin.document.close();
+        printWin.print();
+    }
+
+    // Start App
+    init();
+
+// --- WELCOME INTRO CONTROL ---
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const overlay = document.getElementById('welcomeOverlay');
+        if (overlay) overlay.remove();
+    }, 3500); // slightly after animation ends
+});
+
+
+</script>
+</body>
+</html>
